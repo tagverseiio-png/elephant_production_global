@@ -22,7 +22,7 @@ export default function FilmDetailPage() {
   const baseInfo = homeFilms.find((f) => f.id === filmId);
   
   // Retrieve detailed info from films.json database
-  const details = (filmsDatabase as Record<string, FilmData>)[filmId];
+  const details = (filmsDatabase as unknown as Record<string, Partial<FilmData>>)[filmId];
 
   // Dispatch active film to Navbar on mount and scroll back to top
   useEffect(() => {
