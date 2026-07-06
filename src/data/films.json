@@ -1,0 +1,46 @@
+{
+  "wedding1": {
+    "title": "Wedding 1",
+    "year": "2024",
+    "hero_image": "/works/wedding1/DSC03065_websize.jpg",
+    "director_image": "/works/wedding1/DSC03065_websize.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/works/wedding1/DSC02481_websize.jpg",
+      "/works/wedding1/DSC02509_websize.jpg",
+      "/works/wedding1/DSC02918_websize.jpg",
+      "/works/wedding1/DSC03065_websize.jpg",
+      "/works/wedding1/DSC03084_websize.jpg",
+      "/works/wedding1/DSC03332_websize.jpg"
+    ]
+  },
+  "wedding2": {
+    "title": "Wedding 2",
+    "year": "2023",
+    "hero_image": "/works/wedding2/untitled-20_websize.jpg",
+    "director_image": "/works/wedding2/untitled-20_websize.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/works/wedding2/untitled-8_websize.jpg",
+      "/works/wedding2/untitled-14_websize.jpg",
+      "/works/wedding2/untitled-15_websize.jpg",
+      "/works/wedding2/untitled-20_websize.jpg",
+      "/works/wedding2/untitled-21_websize.jpg"
+    ]
+  },
+  "construction": {
+    "title": "Construction",
+    "year": "2024",
+    "hero_image": "/works/Construction/PCP.082.jpg",
+    "director_image": "/works/Construction/PCP.082.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/works/Construction/PCP.080.jpg",
+      "/works/Construction/PCP.082.jpg",
+      "/works/Construction/PCP.095.jpg",
+      "/works/Construction/PCP.134.jpg",
+      "/works/Construction/PCP.135.jpg",
+      "/works/Construction/PCP.198.jpg"
+    ]
+  }
+}

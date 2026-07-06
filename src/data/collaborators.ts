@@ -1,0 +1,22 @@
+export const collaboratorsList = [
+  { name: 'JFF (Jewish Film Festival)', type: 'FESTIVAL SELECTION' },
+  { name: 'Warsaw Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Seattle Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'SERET', type: 'FESTIVAL SELECTION' },
+  { name: 'Chicago International Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'FIPADOC', type: 'FESTIVAL SELECTION' },
+  { name: 'Santa Barbara International Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Krakow Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'JIFF', type: 'FESTIVAL SELECTION' },
+  { name: 'UK Jewish Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Atlanta Jewish Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Seattle Jewish Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Boca International Jewish Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Ophir Awards', type: 'FESTIVAL SELECTION' },
+  { name: 'Thessaloniki Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'Cinema South Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'HAIFA', type: 'FESTIVAL SELECTION' },
+  { name: 'Mannheim', type: 'FESTIVAL SELECTION' },
+  { name: 'Kiez Berlin Film Festival', type: 'FESTIVAL SELECTION' },
+  { name: 'International Film Festival Rotterdam', type: 'FESTIVAL SELECTION' }
+];

@@ -1,0 +1,20 @@
+export const stillsGrid = [
+  '/assets/6750c22f214b0f9818f5a920_Savoy%20(0-01-02-06).webp',
+  '/assets/6750c22fdcfc0cba857005bd_Savoy%20(0-02-12-07).webp',
+  '/assets/6750c201c90bd57118d82564_Moon12%20Prores422hq%20Lt%20Rt%2002.06.16%20(0-01-02-01).webp',
+  '/assets/6750c201e3f9c080ac8abee3_Moon12%20Prores422hq%20Lt%20Rt%2002.06.16%20(0-17-03-13).webp',
+  '/assets/675eb91e5fafbd1f37953c10_savoy.webp',
+  '/assets/67923c109ebd8d8a03e4960c_moon.jpg',
+  '/assets/675eb903f604a7a856c87467_taboo.webp',
+  '/assets/67923c37a45465ae82ee3f8b_kafka.jpg',
+  '/assets/67923c1fa550c616a38131b9_project.jpg',
+  '/assets/6750c22f214b0f9818f5a920_Savoy%20(0-01-02-06).webp',
+  '/assets/675eb91e5fafbd1f37953c10_savoy.webp',
+  '/assets/67923c109ebd8d8a03e4960c_moon.jpg',
+  '/assets/675eb903f604a7a856c87467_taboo.webp',
+  '/assets/67923c37a45465ae82ee3f8b_kafka.jpg',
+  '/assets/67923c1fa550c616a38131b9_project.jpg',
+  '/assets/675eb903f604a7a856c87467_taboo.webp',
+  '/assets/67923c37a45465ae82ee3f8b_kafka.jpg',
+  '/assets/67923c1fa550c616a38131b9_project.jpg'
+];
