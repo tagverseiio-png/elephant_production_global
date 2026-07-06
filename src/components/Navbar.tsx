@@ -5,15 +5,16 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const navFilms = [
-  { id: 'savoy', title: 'SAVOY', category: 'DOCUMENTARY', year: '2022', duration: '77', image: '/assets/675eb91e5fafbd1f37953c10_savoy.webp' },
-  { id: 'moon-in-the-12th-house', title: 'MOON-12', category: 'FEATURE FILM', year: '2014', duration: '109', image: '/assets/67923c109ebd8d8a03e4960c_moon.jpg' },
-  { id: 'taboo', title: 'TABOO', category: 'DOCUMENTARY', year: '2024', duration: '93', image: '/assets/675eb903f604a7a856c87467_taboo.webp' },
-  { id: 'kafkas-last-trial', title: "KAFKA", category: 'DOCUMENTARY', year: '2024', duration: '83', image: '/assets/67923c37a45465ae82ee3f8b_kafka.jpg' },
-  { id: 'my-project-x', title: 'PROJECT X', category: 'DOCUMENTARY', year: '2024', duration: '88', image: '/assets/67923c1fa550c616a38131b9_project.jpg' },
-  { id: 'ana-maxim', title: 'ANA MAXIM', category: 'SHORT FILM', year: '2024', duration: '27', image: '/assets/67923c551123732db723b050_ana.jpg' },
-  { id: 'outsider-freud', title: 'FREUD', category: 'DOCUMENTARY', year: '2024', duration: '66', image: '/assets/67923c44b96499e7828b3f02_freud.jpg' }
-];
+import { homeFilms } from '@/data/home_films';
+
+const navFilms = homeFilms.map(film => ({
+  id: film.id,
+  title: film.title,
+  category: film.category,
+  year: film.year,
+  duration: '00', 
+  image: film.stillImage
+}));
 
 /* ──────────────────────────────────────────────
    Ticket dimensions (px):

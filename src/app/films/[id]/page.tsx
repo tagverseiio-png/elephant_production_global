@@ -53,7 +53,7 @@ export default function FilmDetailPage() {
   // Resolve assets with clean default fallbacks
   const heroImage = details?.hero_image || baseInfo.stillImage;
   const directorImage = details?.director_image || heroImage;
-  const trailerUrl = details?.trailer_url ?? '/assets/Savoy-01.mp4';
+  const trailerUrl = details?.trailer_url ?? '';
   const galleryStills = details?.gallery_images && details.gallery_images.length > 0 ? details.gallery_images : fallbackGallery;
   const reviewsList = details?.reviews && details.reviews.length > 0 ? details.reviews : fallbackReviews;
   const awardsList = details?.awards && details.awards.length > 0 ? details.awards : fallbackAwards;
@@ -241,12 +241,9 @@ export default function FilmDetailPage() {
                           <span className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase">
                             {review.source}
                           </span>
-                          <img 
-                            loading="lazy" decoding="async"
-                            src="/assets/6737543fa746759466bd3937_stars.svg"
-                            alt="5 Stars"
-                            className="h-1.5 w-auto"
-                          />
+                          <div className="flex gap-1 text-[8px] text-[#000000] tracking-[0.3em]">
+                            ★ ★ ★ ★ ★
+                          </div>
                         </div>
                         <p className="font-serif text-xs italic font-light text-[#000000]/80 leading-relaxed uppercase">
                           &ldquo;{review.text}&rdquo;
