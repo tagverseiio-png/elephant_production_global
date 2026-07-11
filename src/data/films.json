@@ -2,45 +2,76 @@
   "wedding1": {
     "title": "Wedding 1",
     "year": "2024",
-    "hero_image": "/works/wedding1/DSC03065_websize.jpg",
-    "director_image": "/works/wedding1/DSC03065_websize.jpg",
+    "hero_image": "/media/wedding1/DSC03084_websize.jpg",
+    "director_image": "/media/wedding1/DSC03084_websize.jpg",
     "trailer_url": "",
     "gallery_images": [
-      "/works/wedding1/DSC02481_websize.jpg",
-      "/works/wedding1/DSC02509_websize.jpg",
-      "/works/wedding1/DSC02918_websize.jpg",
-      "/works/wedding1/DSC03065_websize.jpg",
-      "/works/wedding1/DSC03084_websize.jpg",
-      "/works/wedding1/DSC03332_websize.jpg"
+      "/media/wedding1/DSC02481_websize.jpg",
+      "/media/wedding1/DSC02509_websize.jpg",
+      "/media/wedding1/DSC02918_websize.jpg",
+      "/media/wedding1/DSC03065_websize.jpg",
+      "/media/wedding1/DSC03084_websize.jpg",
+      "/media/wedding1/DSC03332_websize.jpg"
     ]
   },
   "wedding2": {
     "title": "Wedding 2",
     "year": "2023",
-    "hero_image": "/works/wedding2/untitled-20_websize.jpg",
-    "director_image": "/works/wedding2/untitled-20_websize.jpg",
+    "hero_image": "/media/wedding2/untitled-20_websize.jpg",
+    "director_image": "/media/wedding2/untitled-20_websize.jpg",
     "trailer_url": "",
     "gallery_images": [
-      "/works/wedding2/untitled-8_websize.jpg",
-      "/works/wedding2/untitled-14_websize.jpg",
-      "/works/wedding2/untitled-15_websize.jpg",
-      "/works/wedding2/untitled-20_websize.jpg",
-      "/works/wedding2/untitled-21_websize.jpg"
+      "/media/wedding2/untitled-8_websize.jpg",
+      "/media/wedding2/untitled-14_websize.jpg",
+      "/media/wedding2/untitled-15_websize.jpg",
+      "/media/wedding2/untitled-20_websize.jpg",
+      "/media/wedding2/untitled-21_websize.jpg"
     ]
   },
-  "construction": {
-    "title": "Construction",
-    "year": "2024",
-    "hero_image": "/works/Construction/PCP.082.jpg",
-    "director_image": "/works/Construction/PCP.082.jpg",
+  "wedding3": {
+    "title": "Wedding 3",
+    "year": "2023",
+    "hero_image": "/media/wedding3/SAN06334_websize.jpg",
+    "director_image": "/media/wedding3/SAN06334_websize.jpg",
     "trailer_url": "",
     "gallery_images": [
-      "/works/Construction/PCP.080.jpg",
-      "/works/Construction/PCP.082.jpg",
-      "/works/Construction/PCP.095.jpg",
-      "/works/Construction/PCP.134.jpg",
-      "/works/Construction/PCP.135.jpg",
-      "/works/Construction/PCP.198.jpg"
+      "/media/wedding3/SAN05902_websize.jpg",
+      "/media/wedding3/SAN06209_websize.jpg",
+      "/media/wedding3/SAN06334_websize.jpg"
+    ]
+  },
+  "wedding4": {
+    "title": "Wedding 4",
+    "year": "2023",
+    "hero_image": "/media/wedding4/NIR08050_websize.jpg",
+    "director_image": "/media/wedding4/NIR08050_websize.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/media/wedding4/NIR08050_websize.jpg",
+      "/media/wedding4/PGE270_websize.jpg",
+      "/media/wedding4/PGE319_websize.jpg"
+    ]
+  },
+  "wedding5": {
+    "title": "Wedding 5",
+    "year": "2024",
+    "hero_image": "/media/wedding5/02_websize.jpg",
+    "director_image": "/media/wedding5/02_websize.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/media/wedding5/02_websize.jpg",
+      "/media/wedding5/03_websize.jpg"
+    ]
+  },
+  "wedding6": {
+    "title": "Wedding 6",
+    "year": "2024",
+    "hero_image": "/media/wedding6/DSC00529_websize.jpg",
+    "director_image": "/media/wedding6/DSC00529_websize.jpg",
+    "trailer_url": "",
+    "gallery_images": [
+      "/media/wedding6/DSC00529_websize.jpg",
+      "/media/wedding6/DSC00544_websize.jpg"
     ]
   }
 }

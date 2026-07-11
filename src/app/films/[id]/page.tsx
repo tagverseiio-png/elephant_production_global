@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '@/components/Footer';
 import filmsDatabase from '@/data/films.json';
@@ -170,10 +171,13 @@ export default function FilmDetailPage() {
             <>
               {/* Still Background Image inside the card boundary with light vintage blending */}
               <div className="absolute inset-0 opacity-15 pointer-events-none z-0 mix-blend-multiply">
-                <img
+                <Image
                   src={heroImage}
                   alt={baseInfo.title}
-                  className="h-full w-full object-cover grayscale contrast-125"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 100vw"
+                  className="object-cover grayscale contrast-125"
                 />
               </div>
 
@@ -187,10 +191,11 @@ export default function FilmDetailPage() {
                   {baseInfo.awardLaurel && (
                     <div className="flex items-center gap-3">
                       {baseInfo.awardLogo && (
-                        <img
-                          loading="lazy" decoding="async"
+                        <Image
                           src={baseInfo.awardLogo}
                           alt="Festival Logo"
+                          width={40}
+                          height={32}
                           className="h-8 w-auto object-contain"
                         />
                       )}
@@ -309,11 +314,12 @@ export default function FilmDetailPage() {
           {/* Left: Director Profile */}
           <div className="lg:col-span-4 space-y-6">
             <div className="relative aspect-[3/4.2] w-full max-w-[280px] rounded-t-full overflow-hidden border border-elephant-black/10 bg-elephant-black/5 shadow-md">
-              <img
-                loading="lazy" decoding="async"
+              <Image
                 src={directorImage}
                 alt="Director Profile Still"
-                className="h-full w-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 300px"
+                className="object-cover"
               />
             </div>
             
@@ -376,11 +382,12 @@ export default function FilmDetailPage() {
                 key={idx}
                 className="relative w-[280px] md:w-[360px] aspect-[4/3] rounded-lg overflow-hidden border border-[#000000]/5 bg-elephant-black/10 shadow-sm"
               >
-                <img
-                  loading="lazy" decoding="async"
+                <Image
                   src={still}
                   alt={`Gallery Still ${idx + 1}`}
-                  className="h-full w-full object-cover pointer-events-none"
+                  fill
+                  sizes="(max-width: 768px) 280px, 360px"
+                  className="object-cover pointer-events-none"
                 />
               </div>
             ))}

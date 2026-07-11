@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import Footer from '@/components/Footer';
 import DecryptedText from '@/components/DecryptedText';
 import { stillsGrid } from '@/data/stills';
@@ -71,13 +72,13 @@ export default function AboutPage() {
               className="relative w-full max-w-[200px] aspect-[1/2.7] border border-dashed border-elephant-ivory/20 bg-elephant-ivory/5 shadow-2xl p-1 overflow-hidden"
               style={{ clipPath: 'url(#gothicArch)' }}
             >
-              <motion.img
+              <Image
                 src="/assets/678fb034c5b0d0c6213eba55_about_left.webp"
                 alt="Arch scene left"
-                className="h-full w-full object-cover grayscale brightness-85 contrast-105"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover grayscale brightness-85 contrast-105"
                 style={{ clipPath: 'url(#gothicArch)' }}
-                whileHover={{ scale: 1.06 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>
           </motion.div>
@@ -168,13 +169,13 @@ export default function AboutPage() {
               className="relative w-full max-w-[200px] aspect-[1/2.7] border border-dashed border-elephant-ivory/20 bg-elephant-ivory/5 shadow-2xl p-1 overflow-hidden"
               style={{ clipPath: 'url(#gothicArch)' }}
             >
-              <motion.img
+              <Image
                 src="/assets/678fb040c3c8dea46d9111a0_about_right.webp"
                 alt="Arch scene right"
-                className="h-full w-full object-cover grayscale brightness-85 contrast-105"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover grayscale brightness-85 contrast-105"
                 style={{ clipPath: 'url(#gothicArch)' }}
-                whileHover={{ scale: 1.06 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>
           </motion.div>
@@ -392,10 +393,12 @@ export default function AboutPage() {
             {/* Founder 1: Dorit Hakim Kramer */}
             <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-6 flex flex-col md:flex-row gap-6 items-start shadow-md">
               <div className="relative aspect-[3/3.8] w-full md:w-[160px] rounded-lg overflow-hidden shrink-0 border border-elephant-ivory/10">
-                <img
+                <Image
                   src="/assets/677d1c980be9774b01319ddb_Dorit_Profile-Image_Elephant.webp"
                   alt="Dorit Portrait"
-                  className="h-full w-full object-cover grayscale"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 200px"
+                  className="object-cover grayscale"
                 />
               </div>
               
@@ -431,10 +434,12 @@ export default function AboutPage() {
             {/* Founder 2: Lee Shira */}
             <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-6 flex flex-col md:flex-row gap-6 items-start shadow-md">
               <div className="relative aspect-[3/3.8] w-full md:w-[160px] rounded-lg overflow-hidden shrink-0 border border-elephant-ivory/10">
-                <img
+                <Image
                   src="/assets/677d1c908e5b2d01aceff0ae_Leelu_Profile-Image_Elephant.webp"
                   alt="Lee Portrait"
-                  className="h-full w-full object-cover grayscale"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 200px"
+                  className="object-cover grayscale"
                 />
               </div>
               
@@ -555,17 +560,21 @@ export default function AboutPage() {
                     transition={{ duration: 0.3 }}
                   >
                     {/* Grayscale Base Image */}
-                    <img
+                    <Image
                       src={src}
                       alt={`Collage Still ${idx + 1}`}
-                      className="h-full w-full object-cover grayscale brightness-95"
+                      fill
+                      sizes="(max-width: 768px) 33vw, 200px"
+                      className="object-cover grayscale brightness-95"
                     />
 
                     {/* Color Overlay (Coin Fill) */}
-                    <img
+                    <Image
                       src={src}
                       alt=""
-                      className="coin-fill-color h-full w-full object-cover brightness-95"
+                      fill
+                      sizes="(max-width: 768px) 33vw, 200px"
+                      className="coin-fill-color object-cover brightness-95"
                     />
                   </motion.div>
                 ))}
@@ -578,10 +587,12 @@ export default function AboutPage() {
       {/* 7. Cinematic "Our Films" Banner (Screenshot 3 / cta-frame) */}
       <section className="relative w-full h-[65vh] overflow-hidden flex flex-col justify-center items-center text-center bg-elephant-black border-t border-elephant-ivory/10">
         <div className="absolute inset-0 opacity-40">
-          <img
+          <Image
             src="/assets/6761a2bf91a62d459886fa28_cta-frame.avif"
             alt="CTA Frame Backdrop"
-            className="h-full w-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-[#000000]/40" />
         </div>

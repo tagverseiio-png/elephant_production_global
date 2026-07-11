@@ -108,7 +108,7 @@ export default function Navbar() {
               className="fixed top-0 left-0 z-[100] px-6 py-6 md:px-10 mix-blend-difference select-none pointer-events-none"
             >
               <Link href="/" onClick={closeAll} className="pointer-events-auto text-white flex flex-col justify-center" aria-label="Home">
-                <img src="/logo.png" alt="Elephant Film Production" className="h-12 md:h-14 w-auto object-contain" />
+                <img src="/logo.png" alt="Elephant Film Production" style={{ height: 'clamp(80px, 10vw, 140px)', width: 'auto', objectFit: 'contain' }} />
               </Link>
             </motion.div>
 
@@ -297,7 +297,7 @@ export default function Navbar() {
 
                           {/* Copyright */}
                           <div className="px-6 py-4 font-mono text-[9px] text-black/50 font-bold uppercase tracking-[0.15em]">
-                            ©2024. ELEPHANT PRODUCTIONS.
+                            ©{new Date().getFullYear()}. ELEPHANT PRODUCTIONS.
                           </div>
                         </motion.div>
                       </motion.div>
@@ -353,7 +353,7 @@ export default function Navbar() {
                             </a>
                           </div>
                           <div className="font-mono text-[9px] text-black/50 font-bold uppercase tracking-[0.15em]">
-                            ©2024. ELEPHANT PRODUCTIONS.
+                            ©{new Date().getFullYear()}. ELEPHANT PRODUCTIONS.
                           </div>
                         </div>
                       </motion.div>

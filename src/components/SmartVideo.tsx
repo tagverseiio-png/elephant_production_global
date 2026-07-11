@@ -30,6 +30,8 @@ export function SmartVideo({ src, isPlaying, className }: VideoPlayerProps) {
     }
   }, [isPlaying, hasInteracted]);
 
+  if (!src) return null;
+
   return (
     <motion.video
       ref={videoRef}

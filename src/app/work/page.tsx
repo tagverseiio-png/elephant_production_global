@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { homeFilms } from '@/data/home_films';
@@ -197,11 +198,28 @@ export default function WorkPage() {
   const activeFilm = homeFilms[activeIndex];
 
   return (
-    <div data-page="work" className="pw h-screen work relative select-none">
+    <div
+      data-page="work"
+      className="pw h-screen work relative select-none"
+      onKeyDown={(e) => {
+        if (isDragging.current) return;
+        if (e.key === 'ArrowRight') {
+          const nextTarget = Math.max(targetX.current - cardWidth, maxScroll);
+          targetX.current = nextTarget;
+          snapToNearestCard();
+        } else if (e.key === 'ArrowLeft') {
+          const nextTarget = Math.min(targetX.current + cardWidth, 0);
+          targetX.current = nextTarget;
+          snapToNearestCard();
+        }
+      }}
+      tabIndex={0}
+      aria-label="Film gallery — use arrow keys to navigate"
+    >
       
       {/* Background grain noise texture */}
       <div 
-        className="absolute inset-0 opacity-[0.035] mix-blend-overlay pointer-events-none z-50"
+        className="absolute inset-0 opacity-[0.035] pointer-events-none z-50"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
         }}
@@ -315,19 +333,27 @@ export default function WorkPage() {
                       style={{ x: parallaxX }}
                     >
                       {/* Background static still image */}
-                      <img
-                        loading="lazy" decoding="async"
+                      <Image
                         src={film.stillImage}
                         alt={film.title}
-                        className={`absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${isSelected ? '-translate-y-full' : 'translate-y-0 group-hover:-translate-y-full'}`}
+                        fill
+                        priority={isSelected}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className={`object-cover pointer-events-none transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+                          film.trailerVideo
+                            ? isSelected ? '-translate-y-full' : 'translate-y-0 group-hover:-translate-y-full'
+                            : 'translate-y-0'
+                        }`}
                       />
 
                       {/* Loop preview video overlay slides in from bottom like a card slot */}
-                      <SmartVideo
-                        className={`absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${isSelected ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'}`}
-                        src={film.trailerVideo}
-                        isPlaying={isSelected || hoveredIndex === index}
-                      />
+                      {film.trailerVideo && (
+                        <SmartVideo
+                          className={`absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${isSelected ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'}`}
+                          src={film.trailerVideo}
+                          isPlaying={isSelected || hoveredIndex === index}
+                        />
+                      )}
                     </motion.div>
 
 
@@ -335,10 +361,11 @@ export default function WorkPage() {
                     {film.awardLaurel && (
                       <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#000000]/80 px-2.5 py-1 rounded backdrop-blur-[2px] border border-elephant-ivory/10">
                         {film.awardLogo && (
-                          <img
-                            loading="lazy" decoding="async"
+                          <Image
                             src={film.awardLogo}
                             alt="Award Logo"
+                            width={40}
+                            height={16}
                             className="h-4 w-auto object-contain invert brightness-0"
                           />
                         )}
@@ -421,11 +448,12 @@ export default function WorkPage() {
                         }
                       }}
                     >
-                      <img
-                        loading="lazy" decoding="async"
+                      <Image
                         src={topStill}
-                        alt=""
-                        className={`h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
+                        alt={homeFilms[colIdx % homeFilms.length]?.title ?? `Film still ${colIdx + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 250px, 300px"
+                        className={`object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
                           isSelected ? 'grayscale-0' : 'grayscale'
                         }`}
                       />
@@ -473,11 +501,12 @@ export default function WorkPage() {
                         }
                       }}
                     >
-                      <img
-                        loading="lazy" decoding="async"
+                      <Image
                         src={bottomStill}
-                        alt=""
-                        className={`h-full w-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
+                        alt={homeFilms[(colIdx + 2) % homeFilms.length]?.title ?? `Film still ${colIdx + 10}`}
+                        fill
+                        sizes="(max-width: 768px) 250px, 300px"
+                        className={`object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
                           isSelected ? 'grayscale-0' : 'grayscale'
                         }`}
                       />
@@ -504,11 +533,13 @@ export default function WorkPage() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="h-10 w-10 rounded border border-elephant-ivory/10 overflow-hidden shrink-0">
-                  <img
+                <div className="relative h-10 w-10 rounded border border-elephant-ivory/10 overflow-hidden shrink-0">
+                  <Image
                     src={activeFilm.stillImage}
-                    alt=""
-                    className="h-full w-full object-cover animate-pulse"
+                    alt={activeFilm.title}
+                    fill
+                    sizes="40px"
+                    className="object-cover"
                   />
                 </div>
                 <div>

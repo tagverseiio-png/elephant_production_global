@@ -113,9 +113,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           <motion.img 
             src="/logo.png"
             alt="Elephant"
-            className="w-[60vw] sm:w-[40vw] max-w-2xl object-contain drop-shadow-2xl"
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            className="w-[35vw] sm:w-[20vw] max-w-[280px] object-contain drop-shadow-2xl"
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
           />
         </div>
@@ -141,7 +141,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                   handleButtonMouseLeave();
                 }}
                 onMouseMove={handleButtonMouseMove}
-                className="group relative flex h-14 w-52 items-center justify-between px-6"
+                className="group relative flex h-14 w-52 items-center"
                 style={{ 
                   clipPath: 'url(#preloaderTicketMask)',
                   boxShadow,
@@ -168,28 +168,29 @@ export default function Preloader({ onComplete }: PreloaderProps) {
 
                 {/* Ticket SVG Border Outline */}
                 <div className="absolute inset-0 pointer-events-none z-20">
-                  <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <svg className="w-full h-full" viewBox="0 0 208 56">
                     <motion.path
-                      d="M 0,3 A 3,3 0 0,1 3,0 L 97,0 A 3,3 0 0,1 100,3 L 100,43 A 4,4 0 0,0 100,57 L 100,97 A 3,3 0 0,1 97,100 L 3,100 A 3,3 0 0,1 0,97 L 0,57 A 4,4 0 0,0 0,43 Z"
+                      d="M 0,4 A 4,4 0 0,1 4,0 L 204,0 A 4,4 0 0,1 208,4 L 208,22 A 6,6 0 0,0 208,34 L 208,52 A 4,4 0 0,1 204,56 L 4,56 A 4,4 0 0,1 0,52 L 0,34 A 6,6 0 0,0 0,22 Z"
                       fill="none"
                       animate={{
                         stroke: isHovered ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.35)'
                       }}
                       transition={{ duration: 0.2 }}
-                      strokeWidth="0.5"
-                      vectorEffect="non-scaling-stroke"
+                      strokeWidth="1"
                     />
                   </svg>
                 </div>
                 
                 {/* Left side: Enter Text */}
-                <motion.span
-                  animate={{ color: isHovered ? '#000000' : '#FFFFFF' }}
-                  transition={{ duration: 0.2 }}
-                  className="font-mono text-xs font-black tracking-widest uppercase z-10"
-                >
-                  ENTER
-                </motion.span>
+                <div className="w-[60%] flex items-center justify-center z-10 h-full">
+                  <motion.span
+                    animate={{ color: isHovered ? '#000000' : '#FFFFFF' }}
+                    transition={{ duration: 0.2 }}
+                    className="font-mono text-xs font-black tracking-widest uppercase"
+                  >
+                    ENTER
+                  </motion.span>
+                </div>
 
                 {/* Vertical Tear-off Dashed Line */}
                 <motion.div
@@ -197,40 +198,25 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                     borderColor: isHovered ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.3)'
                   }}
                   transition={{ duration: 0.2 }}
-                  className="h-8 border-r border-dashed mx-2 z-10"
+                  className="h-8 border-r border-dashed z-10 shrink-0"
                 />
 
-                {/* Right side: Vector Barcode & ID stub */}
-                <div className="flex items-center gap-2 z-10">
+                {/* Right side: Arrow */}
+                <div className="w-[40%] flex items-center justify-center z-10 h-full">
                   <motion.svg
                     animate={{
-                      color: isHovered ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.75)'
+                      color: isHovered ? '#000000' : '#FFFFFF'
                     }}
                     transition={{ duration: 0.2 }}
-                    className="h-5 w-10 opacity-75"
-                    fill="currentColor"
-                    viewBox="0 0 40 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-5 h-5"
                   >
-                    <rect x="0" y="2" width="2" height="16" />
-                    <rect x="4" y="2" width="1" height="16" />
-                    <rect x="7" y="2" width="3" height="16" />
-                    <rect x="12" y="2" width="1" height="16" />
-                    <rect x="15" y="2" width="2" height="16" />
-                    <rect x="19" y="2" width="4" height="16" />
-                    <rect x="25" y="2" width="1" height="16" />
-                    <rect x="28" y="2" width="2" height="16" />
-                    <rect x="32" y="2" width="1" height="16" />
-                    <rect x="35" y="2" width="3" height="16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                   </motion.svg>
-                  <motion.span
-                    animate={{
-                      color: isHovered ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.45)'
-                    }}
-                    transition={{ duration: 0.2 }}
-                    className="font-mono text-[7px] font-bold rotate-90 origin-center translate-x-1"
-                  >
-                    004
-                  </motion.span>
                 </div>
               </motion.button>
             </motion.div>
@@ -241,8 +227,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       {/* Local SVG clip path for the preloader ticket button */}
       <svg className="absolute h-0 w-0" aria-hidden="true">
         <defs>
-          <clipPath id="preloaderTicketMask" clipPathUnits="objectBoundingBox">
-            <path d="M 0,0.03 A 0.03,0.03 0 0,0 0.03,0 L 0.97,0 A 0.03,0.03 0 0,0 1,0.03 L 1,0.43 A 0.04,0.04 0 0,0 1,0.57 L 1,0.97 A 0.03,0.03 0 0,0 0.97,1 L 0.03,1 A 0.03,0.03 0 0,0 0,0.97 L 0,0.57 A 0.04,0.04 0 0,0 0,0.43 Z" />
+          <clipPath id="preloaderTicketMask">
+            <path d="M 0,4 A 4,4 0 0,1 4,0 L 204,0 A 4,4 0 0,1 208,4 L 208,22 A 6,6 0 0,0 208,34 L 208,52 A 4,4 0 0,1 204,56 L 4,56 A 4,4 0 0,1 0,52 L 0,34 A 6,6 0 0,0 0,22 Z" />
           </clipPath>
         </defs>
       </svg>

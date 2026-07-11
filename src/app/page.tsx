@@ -1,348 +1,232 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Preloader from '@/components/Preloader';
-import { homeFilms, HomeFilm } from '@/data/home_films';
+import { homeFilms as films } from '@/data/home_films';
 
-type TicketCardProps = {
-  film: HomeFilm;
-  isCurrentlySelected: boolean;
-  reviews: HomeFilm['reviews'];
-};
+const LaurelWreath = ({ text }: { text: string }) => (
+  <div className="flex flex-col items-center justify-center text-center text-white/95 max-w-[150px] select-none">
+    <svg width="34" height="30" viewBox="0 0 44 40" fill="none" className="opacity-90 mb-1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 8C10 12 10 24 18 32M32 8C34 12 34 24 26 32" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M6 12C4 14 3 18 6 22M38 12C40 14 41 18 38 22" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <circle cx="22" cy="18" r="1.5" fill="currentColor" />
+    </svg>
+    <span className="text-[6px] tracking-[0.25em] font-bold uppercase leading-tight">{text}</span>
+  </div>
+);
 
-// --- COMPONENTS ---
-
-function TicketCard({ film, isCurrentlySelected, reviews }: TicketCardProps) {
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08, delayChildren: 0.2 }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20, filter: 'blur(8px)' },
-    show: { 
-      opacity: 1, y: 0, filter: 'blur(0px)',
-      transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
-    }
-  };
-
-  return (
-    <div 
-      className="group relative w-full h-full text-[#FAF7EE] select-none" 
-      style={{ clipPath: 'url(#ticketMaskLarge)' }}
+const FilmCard = ({ film, index }: { film: typeof films[0]; index: number }) => (
+  <div
+    id={`film-card-wrapper-${index}`}
+    className="film-card-wrapper w-full h-[75vh] sm:h-[80vh] md:h-[85vh] shrink-0 flex items-center justify-center snap-center px-4 md:px-8"
+  >
+    {/* Inner Card Container - will-change added for absolute GPU hardware rendering speed */}
+    <div
+      id={`film-card-inner-${index}`}
+      className="film-card-inner relative w-full h-full max-w-[1600px] aspect-[16/9] overflow-hidden flex flex-col justify-between p-8 sm:p-12 md:p-16 lg:p-20"
+      style={{
+        clipPath: 'url(#smoothHandDrawnClip)',
+        backgroundColor: '#070707',
+        willChange: 'transform, opacity',
+        transform: 'translate3d(0,0,0) scale(1)'
+      }}
     >
-      
-      {/* Background Image Layer */}
-      <motion.div 
-        className="absolute inset-0 z-0 overflow-hidden will-change-transform"
-        initial={{ scale: 1.1, opacity: 0 }}
-        animate={isCurrentlySelected ? { scale: 1, opacity: 1 } : { scale: 1.1, opacity: 0 }}
-        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="absolute inset-0 bg-black" />
-        <img 
-          src={film.stillImage}
-          alt={film.title}
-          loading="lazy" decoding="async"
-          className="absolute inset-0 w-full h-full object-cover opacity-70 pointer-events-none"
-        />
-        {/* gradient: darker at top for reviews, darker at bottom for title */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-black/85" />
-      </motion.div>
-
-      {/* Left Perforated Torn Ticket Edge */}
-      <div className="absolute -left-1 top-4 bottom-4 w-2 z-20 flex flex-col justify-between pointer-events-none">
-        {Array.from({ length: 36 }).map((_, i) => (
-          <div key={i} className="w-2.5 h-2.5 rounded-full bg-black" />
-        ))}
+      {/* Background imagery with cinematic gradient layer */}
+      <div className="absolute inset-0 select-none pointer-events-none">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={film.stillImage} alt={film.title} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/25 to-black/90" />
       </div>
 
-      {/* Right Perforated Torn Ticket Edge */}
-      <div className="absolute -right-1.5 top-4 bottom-4 w-2 z-20 flex flex-col justify-between pointer-events-none">
-        {Array.from({ length: 36 }).map((_, i) => (
-          <div key={i} className="w-2.5 h-2.5 rounded-full bg-black" />
-        ))}
+      <div className="relative z-10 flex justify-between items-start">
+        <div className="flex items-start gap-4">
+          <LaurelWreath text={film.awardLaurel || '2026 AWARD WINNER'} />
+        </div>
+
+        {/* High-contrast star ratings matching the screenshots */}
+        <div className="hidden md:flex flex-col gap-4 items-end max-w-[280px]">
+          {film.reviews.slice(0, 3).map((review, i) => (
+            <div key={i} className="flex flex-col items-end text-right text-white">
+              <div className="text-[6px] tracking-[0.35em] text-amber-400/90 mb-0.5">★★★★★</div>
+              <span className="text-[6px] tracking-[0.25em] font-bold text-white/50 block mb-1">
+                {review.source}
+              </span>
+              <h3 className="text-[10px] font-medium tracking-tight italic leading-snug text-white/90">
+                {review.text}
+              </h3>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* ── FOREGROUND CONTENT ── */}
-      <motion.div 
-        className="relative z-10 w-full h-full flex flex-col justify-between p-5 sm:p-8 md:p-12 lg:p-16"
-        variants={containerVariants}
-        initial="hidden"
-        animate={isCurrentlySelected ? "show" : "hidden"}
-      >
-        
-        {/* ── TOP: Reviews (2-col grid on mobile, hidden on desktop replaced by side stack) ── */}
-        <div className="w-full">
-          {/* Mobile: show 2 reviews side by side at top */}
-          <div className="grid grid-cols-2 gap-3 sm:hidden">
-            {reviews.slice(0, 2).map((review, i) => (
-              <motion.div key={i} variants={itemVariants} className="flex flex-col gap-1">
-                <div className="flex gap-0.5 text-[10px] text-[#FAF7EE] tracking-[0.2em]">
-                  ★ ★ ★ ★ ★
-                </div>
-                <span className="font-mono text-[7px] font-bold tracking-[0.2em] text-[#FAF7EE]/60 uppercase">
-                  {review.source}
+      <div className="relative z-10 flex items-end justify-between">
+        <div className="flex flex-col gap-2 max-w-[70%]">
+          <span className="text-[8px] tracking-[0.35em] font-semibold uppercase text-white/60">
+            {film.category}
+          </span>
+          <h2 className="text-white text-[24px] sm:text-[38px] md:text-[46px] font-black tracking-tighter leading-[0.85] uppercase">
+            {film.title}
+          </h2>
+
+          {/* Metadata table separator */}
+          <div className="flex flex-col w-[180px] sm:w-[240px] md:w-[290px] border-t border-white/20 mt-3 pt-2">
+            {[
+              { label: 'DIRECTOR', value: film.director },
+              { label: 'YEAR', value: film.year },
+              { label: 'CATEGORY', value: film.category }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between py-1 border-b border-white/5 last:border-b-0">
+                <span className="text-[7px] tracking-[0.2em] text-white/40 font-bold uppercase">
+                  {item.label}
                 </span>
-                <p className="font-serif italic text-sm leading-tight text-[#FAF7EE] uppercase tracking-wide">
-                  {review.text.replace(/^"|"$/g, '')}
-                </p>
-              </motion.div>
+                <span className="text-[8px] tracking-[0.1em] text-white/90 font-medium uppercase">
+                  {item.value}
+                </span>
+              </div>
             ))}
           </div>
-
-          {/* Desktop: festival tag top-left + reviews top-right */}
-          <div className="hidden sm:flex justify-between items-start">
-            <motion.div variants={itemVariants} className="space-y-1 max-w-xs">
-              <div className="font-serif text-3xl md:text-4xl font-normal text-[#FAF7EE]">
-                {film.awardYear || film.year}
-              </div>
-              <div className="font-sans text-[9px] md:text-[10px] font-bold tracking-[0.2em] text-[#FAF7EE]/70 uppercase leading-snug max-w-[180px]">
-                {film.awardLaurel || 'NATIONAL COMPETITION OF DOCAVIV'}
-              </div>
-              {film.awardLogo && (
-                <img loading="lazy" decoding="async" src={film.awardLogo} alt="Festival logo" className="h-6 w-auto object-contain opacity-80 brightness-200 mt-2" />
-              )}
-            </motion.div>
-            <div className="flex flex-col items-end gap-5 text-right max-w-[300px] pt-2">
-              {reviews.slice(0, 2).map((review, i) => (
-                <motion.div key={i} variants={itemVariants} className="flex flex-col items-end gap-1">
-                  <div className="flex gap-1 text-[11px] text-[#FAF7EE] tracking-[0.3em]">★ ★ ★ ★ ★</div>
-                  <span className="font-mono text-[8px] font-bold tracking-[0.25em] text-[#FAF7EE]/60 uppercase mt-0.5">{review.source}</span>
-                  <p className="font-serif italic text-base md:text-lg leading-tight text-[#FAF7EE] uppercase tracking-wide mt-0.5">
-                    "{review.text.replace(/^"|"$/g, '')}"
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* ── BOTTOM SECTION ── */}
-        <div className="w-full flex flex-col gap-4">
-          
-          {/* Category + Title */}
-          <div>
-            <motion.span variants={itemVariants} className="font-serif text-[10px] sm:text-[11px] tracking-[0.3em] text-[#FAF7EE] uppercase block mb-1">
-              {film.category}
-            </motion.span>
-            <motion.h2 variants={itemVariants} className="font-sans font-black text-[clamp(2.5rem,10vw,5rem)] sm:text-5xl md:text-6xl lg:text-[80px] tracking-tight uppercase leading-[0.88] text-[#FAF7EE]">
-              {film.title}
-            </motion.h2>
-          </div>
-
-          {/* Metadata Table */}
-          <motion.div variants={itemVariants} className="w-full sm:w-[300px]">
-            <div className="border-t border-b border-[#FAF7EE]/30 text-[9px] sm:text-[11px] font-mono">
-              <div className="flex justify-between items-center py-1.5 sm:py-2.5 border-b border-[#FAF7EE]/30">
-                <span className="text-[#FAF7EE]/60 tracking-[0.25em] uppercase">DIRECTOR</span>
-                <span className="font-bold tracking-wider text-[#FAF7EE] uppercase text-right">{film.director}</span>
-              </div>
-              <div className="flex justify-between items-center py-1.5 sm:py-2.5 border-b border-[#FAF7EE]/30">
-                <span className="text-[#FAF7EE]/60 tracking-[0.25em] uppercase">YEAR</span>
-                <span className="font-bold tracking-wider text-[#FAF7EE] text-right">{film.year}</span>
-              </div>
-              <div className="flex justify-between items-center py-1.5 sm:py-2.5">
-                <span className="text-[#FAF7EE]/60 tracking-[0.25em] uppercase">CATEGORY</span>
-                <span className="font-bold tracking-wider text-[#FAF7EE] uppercase text-right">{film.category}</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* EXPLORE button — full width ticket style on mobile, pill on desktop */}
-          <motion.div variants={itemVariants} className="w-full sm:w-auto sm:self-end">
-            <Link
-              href={`/films/${film.id}`}
-              className="sm:hidden flex items-center justify-between w-full h-12 px-5 text-black bg-[#FAF7EE] relative"
-              style={{ clipPath: 'url(#preloaderTicketMask)' }}
-            >
-              <span className="font-sans text-[11px] font-black tracking-[0.25em] uppercase">EXPLORE</span>
-              <div className="h-7 border-r border-dashed border-black/30 mx-2" />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-            <Link
-              href={`/films/${film.id}`}
-              className="hidden sm:flex h-11 px-5 items-center justify-between text-[#FAF7EE] border border-[#FAF7EE]/60 rounded-full bg-transparent hover:bg-[#FAF7EE] hover:text-black transition-all duration-300 gap-4"
-            >
-              <span className="font-sans text-[11px] font-bold tracking-[0.2em] uppercase">EXPLORE</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-          </motion.div>
-
+        {/* Explore CTA styling with ticket shape border */}
+        <div className="mb-1 shrink-0">
+          <Link href={`/films/${film.id}`} className="flex items-center gap-3 px-5 py-2.5 sm:px-6 sm:py-3 border border-white/25 hover:border-white hover:bg-white/10 transition-colors cursor-pointer group rounded-[4px]">
+            <span className="text-[7px] tracking-[0.3em] font-bold uppercase text-white">EXPLORE</span>
+            <svg className="transform group-hover:translate-x-1 transition-transform" width="10" height="8" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 1L11 5M11 5L7 9M11 5H1" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+            </svg>
+          </Link>
         </div>
-
-      </motion.div>
+      </div>
     </div>
-  );
-}
+  </div>
+);
 
-export default function Home() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(homeFilms.length - 1);
-  const [scrollDuration, setScrollDuration] = useState(0.25); // Fast snappy duration for the one-by-one shuffle
-  const isScrolling = useRef(false);
+const App = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeScroll, setActiveScroll] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const rAFRef = useRef<number | null>(null);
 
-  // Intro rapid one-by-one scroll animation
+  // We loop 5 copies of the film sequence to ensure absolute scroll buffer in both directions
+  const loopedFilms = [
+    ...films, // Set 0
+    ...films, // Set 1
+    ...films, // Set 2 (Center Anchor)
+    ...films, // Set 3
+    ...films  // Set 4
+  ];
+
   useEffect(() => {
-    if (isLoaded) {
-      isScrolling.current = true;
-      let currentStep = homeFilms.length - 1;
-      
-      // Wait 1 full second for the Preloader to completely fade out
-      const timer = setTimeout(() => {
-        const playNext = () => {
-          currentStep--;
-          
-          if (currentStep > 0) {
-            setCurrentIndex(currentStep);
-            setTimeout(playNext, 280); // 280ms per project for a fast one-by-one effect
-          } else {
-            // Final step to 0: make it a slow, smooth landing
-            setScrollDuration(1.2); 
-            setCurrentIndex(0);
-            
-            // Unlock scrolling after the final animation finishes
-            setTimeout(() => {
-              isScrolling.current = false;
-            }, 1500);
-          }
-        };
-        
-        playNext();
-      }, 1000);
+    const container = containerRef.current;
+    if (!container) return;
 
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded]);
+    const N = films.length;
 
-  // Smooth full-page scroll locking logic
-  useEffect(() => {
-    if (!isLoaded) return;
+    // Initializes loading spot accurately in the center array sequence
+    const initializePosition = () => {
+      if (!container) return;
+      const children = container.children;
+      if (children.length < N * 5) return;
 
-    let touchStartY = 0;
+      const firstCard = children[0] as HTMLElement;
+      const middleCard = children[N * 2] as HTMLElement; // Start of Set 2
 
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault(); // Prevent all native scrolling
-      if (isScrolling.current) return;
-
-      if (e.deltaY > 30) {
-        if (currentIndex < homeFilms.length - 1) {
-          isScrolling.current = true;
-          setCurrentIndex(prev => prev + 1);
-          setTimeout(() => { isScrolling.current = false; }, 1200);
-        }
-      } else if (e.deltaY < -30) {
-        if (currentIndex > 0) {
-          isScrolling.current = true;
-          setCurrentIndex(prev => prev - 1);
-          setTimeout(() => { isScrolling.current = false; }, 1200);
-        }
+      if (firstCard && middleCard) {
+        const targetScroll = middleCard.offsetTop - firstCard.offsetTop;
+        container.style.scrollBehavior = 'auto';
+        container.scrollTop = targetScroll;
+        container.style.scrollBehavior = 'smooth';
       }
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
+    // Run positioning once the component finishes loading
+    setTimeout(() => {
+      initializePosition();
+      window.dispatchEvent(new Event('elephant-preloader-complete'));
+    }, 50);
 
-    const handleTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      if (isScrolling.current) return;
-
-      const touchEndY = e.touches[0].clientY;
-      const delta = touchStartY - touchEndY;
-
-      if (delta > 40) {
-        if (currentIndex < homeFilms.length - 1) {
-          isScrolling.current = true;
-          setCurrentIndex(prev => prev + 1);
-          setTimeout(() => { isScrolling.current = false; }, 1200);
-        }
-      } else if (delta < -40) {
-        if (currentIndex > 0) {
-          isScrolling.current = true;
-          setCurrentIndex(prev => prev - 1);
-          setTimeout(() => { isScrolling.current = false; }, 1200);
-        }
+    const handleScroll = () => {
+      if (!container) return;
+      // Cancel any outstanding animation frame to prevent frame bundling
+      if (rAFRef.current) {
+        cancelAnimationFrame(rAFRef.current);
       }
+
+      rAFRef.current = requestAnimationFrame(() => {
+        const children = container.children;
+        if (children.length < N * 5) return;
+
+        const firstCard = children[0] as HTMLElement;
+        const secondSetCard = children[N] as HTMLElement;      // Start of Set 1
+        const fourthSetCard = children[N * 3] as HTMLElement;  // Start of Set 3
+
+        const cycleHeight = secondSetCard.offsetTop - firstCard.offsetTop;
+
+        // Teleports scrolling seamlessly when borders are bypassed
+        if (container.scrollTop < secondSetCard.offsetTop) {
+          container.style.scrollBehavior = 'auto';
+          container.scrollTop += cycleHeight * 2;
+          container.style.scrollBehavior = 'smooth';
+          return;
+        }
+        else if (container.scrollTop > fourthSetCard.offsetTop) {
+          container.style.scrollBehavior = 'auto';
+          container.scrollTop -= cycleHeight * 2;
+          container.style.scrollBehavior = 'smooth';
+          return;
+        }
+      });
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', initializePosition);
 
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', initializePosition);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      if (rAFRef.current) cancelAnimationFrame(rAFRef.current);
     };
-  }, [currentIndex, isLoaded]);
+  }, []);
 
   return (
-    <>
-      <AnimatePresence>
-        {!isLoaded && <Preloader onComplete={() => setIsLoaded(true)} />}
-      </AnimatePresence>
-      <div className="w-screen h-[100dvh] overflow-hidden bg-black text-[#FAF7EE] relative">
-      <motion.div 
-        className="w-full h-full flex flex-col will-change-transform"
-        animate={{ y: `-${currentIndex * 100}dvh` }}
-        transition={{ duration: scrollDuration, ease: [0.16, 1, 0.3, 1] }} // Dynamic duration
-      >
-        {homeFilms.map((film, idx) => (
-          <section
-            key={film.id}
-            className="w-screen h-[100dvh] shrink-0 flex items-center justify-center px-2 py-4"
-          >
-            <motion.div 
-              className="w-[96vw] sm:w-[94vw] h-full max-w-[1800px] max-h-[75vh] sm:max-h-[70vh] will-change-transform"
-              animate={{ 
-                scale: currentIndex === idx ? 1 : 0.85,
-                opacity: currentIndex === idx ? 1 : 0.2
-              }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <TicketCard
-                film={film}
-                isCurrentlySelected={currentIndex === idx}
-                reviews={film.reviews}
-              />
-            </motion.div>
-          </section>
-        ))}
-      </motion.div>
+    <div className="bg-[#030303] min-h-screen w-full relative overflow-hidden font-sans select-none">
 
-      {/* Pagination indicators */}
-      <div className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 sm:gap-3 z-50 mix-blend-difference">
-        {homeFilms.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => {
-              if (!isScrolling.current) {
-                isScrolling.current = true;
-                setCurrentIndex(idx);
-                setTimeout(() => { isScrolling.current = false; }, 1200);
-              }
-            }}
-            className="group py-2 flex items-center justify-center outline-none"
-          >
-            <div 
-              className={`w-1.5 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] rounded-full ${
-                currentIndex === idx ? 'h-8 bg-white' : 'h-1.5 bg-white/30 group-hover:bg-white/60 group-hover:h-3'
-              }`}
-            />
-          </button>
+      {/* Custom responsive hand-drawn clip path with soft corners & subtle irregular sides */}
+      <svg className="absolute w-0 h-0">
+        <defs>
+          <clipPath id="smoothHandDrawnClip" clipPathUnits="objectBoundingBox">
+            <path d="M 0.03,0.05 
+                     C 0.25,0.042 0.75,0.038 0.97,0.05 
+                     C 0.98,0.08 0.98,0.12 0.975,0.18 
+                     C 0.97,0.45 0.98,0.55 0.972,0.82 
+                     C 0.97,0.92 0.92,0.97 0.82,0.965 
+                     C 0.55,0.958 0.45,0.972 0.18,0.965 
+                     C 0.08,0.97 0.03,0.92 0.028,0.82 
+                     C 0.035,0.55 0.025,0.45 0.03,0.18 
+                     C 0.03,0.12 0.025,0.08 0.03,0.05 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      {/* Subtle vignettes to gracefully hide cards when transitioning */}
+      <div className="fixed top-0 left-0 w-full h-[12vh] bg-gradient-to-b from-black via-black/80 to-transparent z-40 pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-full h-[12vh] bg-gradient-to-t from-black via-black/80 to-transparent z-40 pointer-events-none" />
+
+
+
+      {/* Dynamic looping roller container with tight card footprint */}
+      <div
+        ref={containerRef}
+        className="h-screen w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth flex flex-col gap-[1.5vh] py-[6vh] no-scrollbar"
+        style={{ scrollbarWidth: 'none' }}
+      >
+        {loopedFilms.map((film, index) => (
+          <FilmCard key={`${film.id}-${index}`} film={film} index={index} />
         ))}
       </div>
     </div>
-    </>
   );
-}
+};
+
+export default App;

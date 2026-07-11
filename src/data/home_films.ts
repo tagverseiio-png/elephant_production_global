@@ -19,7 +19,7 @@ export const homeFilms: HomeFilm[] = [
     category: 'Wedding',
     year: '2024',
     director: 'Harry',
-    stillImage: '/works/wedding1/DSC03084_websize.jpg',
+    stillImage: '/media/wedding1/DSC03084_websize.jpg',
     trailerVideo: '',
     reviews: [
       { text: '"Captured our day perfectly"', source: 'Client' },
@@ -33,26 +33,59 @@ export const homeFilms: HomeFilm[] = [
     category: 'Wedding',
     year: '2023',
     director: 'Harry',
-    stillImage: '/works/wedding2/untitled-14_websize.jpg',
+    stillImage: '/media/wedding2/untitled-20_websize.jpg',
     trailerVideo: '',
     reviews: [
       { text: '"Breathtaking moments"', source: 'Client' },
       { text: '"We couldn\'t be happier"', source: 'Family' },
-      { text: '"Stunning visual storytelling"', source: 'Guests' }
     ]
   },
   {
-    id: 'construction',
-    title: 'Construction',
-    category: 'Construction',
-    year: '2024',
+    id: 'wedding3',
+    title: 'Wedding 3',
+    category: 'Wedding',
+    year: '2023',
     director: 'Harry',
-    stillImage: '/works/Construction/PCP.198.jpg',
+    stillImage: '/media/wedding3/SAN06334_websize.jpg',
     trailerVideo: '',
     reviews: [
-      { text: '"Epic scale captured beautifully"', source: 'Client' },
-      { text: '"Showcases our work perfectly"', source: 'Contractor' },
-      { text: '"A cinematic view of progress"', source: 'Architect' }
+      { text: '"Absolutely stunning"', source: 'Client' }
+    ]
+  },
+  {
+    id: 'wedding4',
+    title: 'Wedding 4',
+    category: 'Wedding',
+    year: '2023',
+    director: 'Harry',
+    stillImage: '/media/wedding4/NIR08050_websize.jpg',
+    trailerVideo: '',
+    reviews: [
+      { text: '"Magical photography"', source: 'Client' }
+    ]
+  },
+  {
+    id: 'wedding5',
+    title: 'Wedding 5',
+    category: 'Wedding',
+    year: '2024',
+    director: 'Harry',
+    stillImage: '/media/wedding5/02_websize.jpg',
+    trailerVideo: '',
+    reviews: [
+      { text: '"We are in awe"', source: 'Client' }
+    ]
+  },
+  {
+    id: 'wedding6',
+    title: 'Wedding 6',
+    category: 'Wedding',
+    year: '2024',
+    director: 'Harry',
+    stillImage: '/media/wedding6/DSC00529_websize.jpg',
+    trailerVideo: '',
+    reviews: [
+      { text: '"Beautiful"', source: 'Client' }
     ]
   }
 ];

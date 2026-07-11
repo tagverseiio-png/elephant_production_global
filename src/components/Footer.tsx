@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
+  const [subscribed, setSubscribed] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you! Your newsletter submission has been received.');
+    setSubscribed(true);
   };
 
   return (
@@ -37,21 +39,33 @@ export default function Footer() {
           <h3 className="font-serif text-xl italic text-elephant-ivory/90">
             Stay up to date with our releases
           </h3>
-          <form onSubmit={handleSubmit} className="flex max-w-md w-full gap-2 border-b border-elephant-ivory/20 pb-2">
-            <input
-              type="email"
-              placeholder="Your email address"
-              required
-              className="flex-1 bg-transparent px-2 py-1.5 font-sans text-xs text-elephant-ivory outline-none placeholder:text-elephant-ivory/30"
-            />
-            <button
-              type="submit"
-              className="font-mono text-[10px] font-bold tracking-widest text-elephant-red hover:text-elephant-ivory transition-colors"
-              data-cursor-text="SUBMIT"
-            >
-              SUBSCRIBE
-            </button>
-          </form>
+          {subscribed ? (
+            <div className="flex items-center gap-3 border-b border-elephant-ivory/20 pb-2 max-w-md w-full">
+              {/* Checkmark icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-elephant-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              <span className="font-mono text-[10px] font-bold tracking-widest text-elephant-ivory/70 uppercase">
+                You&apos;re subscribed. Thank you.
+              </span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex max-w-md w-full gap-2 border-b border-elephant-ivory/20 pb-2">
+              <input
+                type="email"
+                placeholder="Your email address"
+                required
+                className="flex-1 bg-transparent px-2 py-1.5 font-sans text-xs text-elephant-ivory outline-none placeholder:text-elephant-ivory/30"
+              />
+              <button
+                type="submit"
+                className="font-mono text-[10px] font-bold tracking-widest text-elephant-red hover:text-elephant-ivory transition-colors"
+                data-cursor-text="SUBMIT"
+              >
+                SUBSCRIBE
+              </button>
+            </form>
+          )}
         </div>
 
         {/* Sitemap list (3 cols) */}
@@ -106,9 +120,9 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row items-center justify-between border-t border-elephant-ivory/10 pt-8 text-[10px] font-mono text-elephant-ivory/40 gap-6 md:gap-4 text-center md:text-left">
         <div className="flex gap-4">
           <span className="text-elephant-ivory/50">Follow us:</span>
-          <a href="https://www.facebook.com/profile.php?id=61572313858308" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover">FB</a>
-          <a href="https://www.linkedin.com/company/elephant-productions-film-foundation" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover">LN</a>
-          <a href="https://www.instagram.com/sienafilmfoundation/" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover">IG</a>
+          <a href="https://www.facebook.com/profile.php?id=61572313858308" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on Facebook">FB</a>
+          <a href="https://www.linkedin.com/company/elephant-productions-film-foundation" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on LinkedIn">LN</a>
+          <a href="https://www.instagram.com/sienafilmfoundation/" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on Instagram">IG</a>
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3">

@@ -116,7 +116,7 @@ export default function ContactPage() {
               </span>
               <a 
                 href={`mailto:${contactInfo.email}?subject=${encodeURIComponent(contactInfo.emailSubject)}`} 
-                className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-wide hover:text-[#FAF7EF] transition-colors mt-2 break-all"
+                className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
                 data-cursor-text="MAIL"
               >
                 {contactInfo.email.toUpperCase()}
@@ -149,7 +149,7 @@ export default function ContactPage() {
               </span>
               <a 
                 href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} 
-                className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-[#FAF7EF] transition-colors mt-2"
+                className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-2"
                 data-cursor-text="CALL"
               >
                 {contactInfo.phone}

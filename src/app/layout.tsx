@@ -4,19 +4,19 @@ import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
 
 export const metadata: Metadata = {
-  title: 'Elephant Productionss',
-  description: 'Elephant Productionss is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
+  title: 'Elephant Productions',
+  description: 'Elephant Productions is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
   openGraph: {
-    title: 'Elephant Productionss',
-    description: 'Elephant Productionss is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
+    title: 'Elephant Productions',
+    description: 'Elephant Productions is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
     url: 'https://www.elephantproductions.com',
-    siteName: 'Elephant Productionss',
+    siteName: 'Elephant Productions',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Elephant Productionss',
-    description: 'Elephant Productionss is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
+    title: 'Elephant Productions',
+    description: 'Elephant Productions is a boutique production house dedicated to crafting groundbreaking narratives that push the boundaries of cinematic storytelling.',
   },
 };
 
