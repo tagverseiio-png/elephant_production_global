@@ -136,7 +136,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.7 }}
             >
-              DEDICATED TO CRAFTING GROUNDBREAKING NARRATIVES
+              DEDICATED TO TRANSFORMING STORIES INTO TIMELESS VISUAL EXPERIENCES
             </motion.p>
 
             {/* Down arrow circle button overlapping bottom border */}
@@ -234,10 +234,10 @@ export default function AboutPage() {
         <div className="about-sm-text">
           <div className="about-small-text-wrap space-y-2">
             {[
-              ["With a commitment to selective ", "and thoughtful ", "storytelling,"],
-              ["Elephant Productions supports ", "and produces ", "TV, documentaries,"],
-              ["and feature films ", "that resonate ", "globally,"],
-              ["leaving an indelible ", "mark ", "on the world of cinema."]
+              ["Elephant Productions is a creative film production house ", "dedicated to transforming stories ", "into timeless visual experiences."],
+              ["From intimate celebrations to large-scale productions, ", "we believe every frame should evoke emotion, ", "preserve memories, and leave a lasting impact."],
+              ["With our head office in Singapore and creative teams ", "operating in Chennai and Karaikudi, ", "we proudly serve clients across Singapore and India,"],
+              ["delivering world-class photography, cinematography, ", "and visual storytelling. ", ""]
             ].map((line, idx) => (
               <motion.div 
                 key={idx}
@@ -361,9 +361,9 @@ export default function AboutPage() {
               transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
             >
               <div>ELEPHANT PRODUCTIONS</div>
-              <div>HARDCOVER. 365 DAYS OF INNOVATION</div>
-              <div>ISBN: DRIVE-GROWTH-STANDOUT-FANDOM.</div>
-              <div>CULTURALLY-CODED CREATIVITY</div>
+              <div>CRAFTING STORIES. CREATING MEMORIES.</div>
+              <div>INSPIRING GENERATIONS.</div>
+              <div>EVERY PROJECT APPROACHED WITH CREATIVITY.</div>
             </motion.div>
           </div>
         </div>
@@ -387,87 +387,112 @@ export default function AboutPage() {
             </motion.div>
           </div>
 
-          {/* Founders Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Why Choose Us & Services Grid */}
+          <div className="grid grid-cols-1 gap-12">
             
-            {/* Founder 1: Dorit Hakim Kramer */}
-            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-6 flex flex-col md:flex-row gap-6 items-start shadow-md">
-              <div className="relative aspect-[3/3.8] w-full md:w-[160px] rounded-lg overflow-hidden shrink-0 border border-elephant-ivory/10">
-                <Image
-                  src="/assets/677d1c980be9774b01319ddb_Dorit_Profile-Image_Elephant.webp"
-                  alt="Dorit Portrait"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 200px"
-                  className="object-cover grayscale"
-                />
-              </div>
-              
-              <div className="space-y-4 flex-1">
-                <div>
-                  <motion.span 
-                    className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                  >
-                    CATEGORY
-                  </motion.span>
-                  <h3 className="font-serif text-3xl md:text-4xl font-extrabold uppercase tracking-widest leading-[0.85] text-elephant-ivory mt-1">
-                    <DecryptedText text="WEDDING" delay={200} /><br/>
-                    <DecryptedText text="SHOOTS" delay={450} /><br/>
-                    <DecryptedText text="& EVENTS" delay={700} />
-                  </h3>
-                </div>
-                <motion.p 
-                  className="font-sans text-xs text-elephant-ivory/70 leading-relaxed"
-                  initial={{ opacity: 0, y: 20 }}
+            {/* Why Choose Us */}
+            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-start shadow-md">
+              <div>
+                <motion.span 
+                  className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
                 >
-                  Specializing in Anniversary, Babyshower, Bangle Ceremony, Birthday Shoots, Church Wedding, Corporate Shoot, Family Shoots, Gender Reveal, Henna Night, Muslim Wedding, North Indian Wedding, Prewedding, Punjabi Wedding, Puperty Ceremony, Reception Moments, ROM, Tamil Wedding, and Thalipadayal.
-                </motion.p>
+                  WHY US
+                </motion.span>
+                <h3 className="font-serif text-3xl md:text-5xl font-extrabold uppercase tracking-widest leading-[1] text-elephant-ivory mt-2 mb-6">
+                  <DecryptedText text="Why Choose" delay={200} /><br/>
+                  <DecryptedText text="Elephant Productions?" delay={400} />
+                </h3>
               </div>
+              
+              <ul className="space-y-4 font-sans text-sm md:text-base text-elephant-ivory/80 leading-relaxed list-none">
+                {[
+                  "Cinematic storytelling with a creative vision",
+                  "Professional photography and filmmaking team",
+                  "Premium editing and color grading",
+                  "Wedding, corporate, commercial, and event specialists",
+                  "Personalized experience for every client",
+                  "Trusted by clients across Singapore and India"
+                ].map((item, i) => (
+                  <motion.li 
+                    key={i} 
+                    className="flex items-start"
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
+                  >
+                    <span className="text-elephant-red mr-3 mt-0.5">•</span> {item}
+                  </motion.li>
+                ))}
+              </ul>
             </div>
 
-            {/* Founder 2: Lee Shira */}
-            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-6 flex flex-col md:flex-row gap-6 items-start shadow-md">
-              <div className="relative aspect-[3/3.8] w-full md:w-[160px] rounded-lg overflow-hidden shrink-0 border border-elephant-ivory/10">
-                <Image
-                  src="/assets/677d1c908e5b2d01aceff0ae_Leelu_Profile-Image_Elephant.webp"
-                  alt="Lee Portrait"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 200px"
-                  className="object-cover grayscale"
-                />
+            {/* Our Services */}
+            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-start shadow-md">
+              <div>
+                <motion.span 
+                  className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  EXPERTISE
+                </motion.span>
+                <h3 className="font-serif text-3xl md:text-5xl font-extrabold uppercase tracking-widest leading-[1] text-elephant-ivory mt-2 mb-4">
+                  <DecryptedText text="Our Services" delay={300} />
+                </h3>
+                <p className="font-sans text-sm md:text-base text-elephant-ivory/70 leading-relaxed mb-6">
+                  We offer a complete range of photography and videography services, including:
+                </p>
               </div>
-              
-              <div className="space-y-4 flex-1">
-                <div>
-                  <motion.span 
-                    className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 font-sans text-sm md:text-base text-elephant-ivory/80 leading-relaxed w-full">
+                {[
+                  "Pre-Wedding Shoots",
+                  "Wedding Photography & Cinematography",
+                  "Engagement & Reception Coverage",
+                  "Traditional Ceremonies",
+                  "Corporate Photography & Films",
+                  "Brand Commercials & Advertisements",
+                  "Event Coverage",
+                  "Portfolio & Fashion Shoots",
+                  "Maternity Photography",
+                  "Baby Shower Photography",
+                  "Family Portraits",
+                  "Lifestyle Photography",
+                  "Birthday Celebrations",
+                  "Anniversary Shoots",
+                  "Gender Reveal Events",
+                  "Henna Night Coverage",
+                  "Church Weddings",
+                  "Muslim Weddings",
+                  "North Indian Weddings",
+                  "Punjabi Weddings",
+                  "Tamil Weddings",
+                  "ROM Ceremonies",
+                  "Puberty Ceremony",
+                  "Thalipadayal Ceremony",
+                  "Documentary Films",
+                  "Music Videos",
+                  "Short Films",
+                  "TV & Digital Content Production"
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="flex items-start"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
+                    transition={{ duration: 0.4, delay: 0.1 + (i % 5) * 0.05 }}
                   >
-                    CATEGORY
-                  </motion.span>
-                  <h3 className="font-serif text-3xl md:text-4xl font-extrabold uppercase tracking-widest leading-[0.85] text-elephant-ivory mt-1">
-                    <DecryptedText text="CORPORATE" delay={300} /><br/>
-                    <DecryptedText text="& FAMILY" delay={600} />
-                  </h3>
-                </div>
-                <motion.p 
-                  className="font-sans text-xs text-elephant-ivory/70 leading-relaxed"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                >
-                  We capture life's most precious moments with an artistic and cinematic approach, from family portraits to large-scale corporate shoots and everything in between.
-                </motion.p>
+                    <span className="text-elephant-red mr-3 mt-0.5">•</span> {item}
+                  </motion.div>
+                ))}
               </div>
             </div>
 

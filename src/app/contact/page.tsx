@@ -95,13 +95,13 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Triple-Lined Bottom Coordinate Blocks */}
-          <div className="grid grid-cols-1 gap-8 pt-8">
+          {/* Contact Methods */}
+          <div className="flex flex-col gap-12 pt-8">
             
             {/* Project Inquiries Email */}
             <motion.div 
               variants={itemVariants} 
-              className="relative py-4 flex flex-col justify-between group"
+              className="relative py-6 flex flex-col justify-between group"
             >
               {/* Top border line */}
               <motion.div
@@ -116,7 +116,7 @@ export default function ContactPage() {
               </span>
               <a 
                 href={`mailto:${contactInfo.email}?subject=${encodeURIComponent(contactInfo.emailSubject)}`} 
-                className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
+                className="font-serif text-lg sm:text-2xl md:text-4xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
                 data-cursor-text="MAIL"
               >
                 {contactInfo.email.toUpperCase()}
@@ -131,69 +131,115 @@ export default function ContactPage() {
               />
             </motion.div>
 
-            {/* Phone Number */}
-            <motion.div 
-              variants={itemVariants} 
-              className="relative py-4 flex flex-col justify-between group"
-            >
-              {/* Top border line */}
-              <motion.div
-                className="absolute top-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 0.8 }}
-              />
-
-              <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
-                PHONE NUMBER
-              </span>
-              <a 
-                href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, '')}`} 
-                className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-2"
-                data-cursor-text="CALL"
+            {/* Our Presence */}
+            <div>
+              <motion.span 
+                variants={itemVariants}
+                className="font-mono text-[9px] font-bold tracking-widest uppercase block mb-6 text-[#000000]/50"
               >
-                {contactInfo.phone}
-              </a>
+                OUR PRESENCE
+              </motion.span>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                {/* Singapore Head Office */}
+                <motion.div 
+                  variants={itemVariants} 
+                  className="relative py-4 flex flex-col justify-between group"
+                >
+                  <motion.div
+                    className="absolute top-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 0.8 }}
+                  />
+                  <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
+                    HEAD OFFICE
+                  </span>
+                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                    🇸🇬 Singapore
+                  </span>
+                  <a 
+                    href="tel:+6593515143" 
+                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    data-cursor-text="CALL"
+                  >
+                    📞 +65 9351 5143
+                  </a>
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.0 }}
+                  />
+                </motion.div>
 
-              {/* Bottom border line */}
-              <motion.div
-                className="absolute bottom-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.0 }}
-              />
-            </motion.div>
+                {/* Chennai Branch */}
+                <motion.div 
+                  variants={itemVariants} 
+                  className="relative py-4 flex flex-col justify-between group"
+                >
+                  <motion.div
+                    className="absolute top-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 0.9 }}
+                  />
+                  <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
+                    BRANCH
+                  </span>
+                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                    🇮🇳 Chennai
+                  </span>
+                  <a 
+                    href="tel:+919003071700" 
+                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    data-cursor-text="CALL"
+                  >
+                    📞 +91 90030 71700
+                  </a>
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.1 }}
+                  />
+                </motion.div>
 
-            {/* Address */}
-            <motion.div 
-              variants={itemVariants} 
-              className="relative py-4 flex flex-col justify-between group"
-            >
-              {/* Top border line */}
-              <motion.div
-                className="absolute top-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 0.9 }}
-              />
+                {/* Karaikudi Branch */}
+                <motion.div 
+                  variants={itemVariants} 
+                  className="relative py-4 flex flex-col justify-between group"
+                >
+                  <motion.div
+                    className="absolute top-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.0 }}
+                  />
+                  <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
+                    BRANCH
+                  </span>
+                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                    🇮🇳 Karaikudi
+                  </span>
+                  <a 
+                    href="tel:+918012248366" 
+                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    data-cursor-text="CALL"
+                  >
+                    📞 +91 80122 48366
+                  </a>
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.2 }}
+                  />
+                </motion.div>
 
-              <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
-                ADDRESS
-              </span>
-              <span 
-                className="font-serif text-xl md:text-2xl font-extrabold tracking-wide mt-2"
-              >
-                {contactInfo.address}
-              </span>
-
-              {/* Bottom border line */}
-              <motion.div
-                className="absolute bottom-0 left-0 right-0 h-px bg-[#000000]/20 origin-left"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.0, ease: [0.77, 0, 0.175, 1], delay: 1.1 }}
-              />
-            </motion.div>
+              </div>
+            </div>
 
           </div>
         </motion.div>
