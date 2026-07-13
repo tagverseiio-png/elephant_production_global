@@ -28,12 +28,12 @@ export default function ContactPage() {
     <div className="min-h-screen bg-[#FF0000] text-[#000000] select-none flex flex-col justify-between">
       
       {/* Contact Content Container (Screenshot 5) */}
-      <section className="pt-28 sm:pt-40 pb-16 sm:pb-20 px-5 sm:px-8 md:px-12 max-w-5xl w-full mx-auto flex-1 flex flex-col justify-center">
+      <section className="pt-20 sm:pt-28 pb-10 sm:pb-12 px-5 sm:px-8 md:px-12 max-w-4xl w-full mx-auto flex-1 flex flex-col justify-center">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-16"
+          className="space-y-10"
         >
           {/* Header Typography */}
           <div className="space-y-4 text-center">
@@ -86,7 +86,7 @@ export default function ContactPage() {
               
               <motion.h1 
                 variants={itemVariants}
-                className="font-serif text-[clamp(3.5rem,18vw,8rem)] font-black tracking-tight uppercase leading-[0.9] text-left py-4"
+                className="font-serif text-[clamp(2.5rem,8vw,4.5rem)] font-black tracking-tight uppercase leading-[0.9] text-left py-4"
               >
                 <DecryptedText text="CRAFT" delay={300} />
                 <br />
@@ -116,7 +116,7 @@ export default function ContactPage() {
               </span>
               <a 
                 href={`mailto:${contactInfo.email}?subject=${encodeURIComponent(contactInfo.emailSubject)}`} 
-                className="font-serif text-lg sm:text-2xl md:text-4xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
+                className="font-serif text-lg sm:text-xl md:text-2xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
                 data-cursor-text="MAIL"
               >
                 {contactInfo.email.toUpperCase()}
@@ -156,12 +156,12 @@ export default function ContactPage() {
                   <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
                     HEAD OFFICE
                   </span>
-                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                  <span className="font-serif text-xl md:text-2xl font-extrabold tracking-wide mt-2 mb-4">
                     🇸🇬 Singapore
                   </span>
                   <a 
                     href="tel:+6593515143" 
-                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    className="font-sans text-base md:text-lg font-black tracking-wider hover:text-black transition-colors mt-auto"
                     data-cursor-text="CALL"
                   >
                     📞 +65 9351 5143
@@ -188,12 +188,12 @@ export default function ContactPage() {
                   <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
                     BRANCH
                   </span>
-                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                  <span className="font-serif text-xl md:text-2xl font-extrabold tracking-wide mt-2 mb-4">
                     🇮🇳 Chennai
                   </span>
                   <a 
                     href="tel:+919003071700" 
-                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    className="font-sans text-base md:text-lg font-black tracking-wider hover:text-black transition-colors mt-auto"
                     data-cursor-text="CALL"
                   >
                     📞 +91 90030 71700
@@ -220,12 +220,12 @@ export default function ContactPage() {
                   <span className="font-mono text-[8px] text-[#000000]/50 uppercase mt-2">
                     BRANCH
                   </span>
-                  <span className="font-serif text-2xl md:text-3xl font-extrabold tracking-wide mt-2 mb-4">
+                  <span className="font-serif text-xl md:text-2xl font-extrabold tracking-wide mt-2 mb-4">
                     🇮🇳 Karaikudi
                   </span>
                   <a 
                     href="tel:+918012248366" 
-                    className="font-sans text-xl md:text-2xl font-black tracking-wider hover:text-black transition-colors mt-auto"
+                    className="font-sans text-base md:text-lg font-black tracking-wider hover:text-black transition-colors mt-auto"
                     data-cursor-text="CALL"
                   >
                     📞 +91 80122 48366

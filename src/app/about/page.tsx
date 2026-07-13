@@ -34,9 +34,9 @@ export default function AboutPage() {
   const xLine4 = useTransform(scrollYProgress, [0, 1], ["15%", "50%"]);
 
   // Parallax translation mapping values for text categories to prevent collisions
-  const xTelevision = useTransform(scrollYProgress, [0, 1], ["0%", "-15%"]);
-  const xFilms = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const xDocumentary = useTransform(scrollYProgress, [0, 1], ["5%", "25%"]);
+  const xTelevision = useTransform(scrollYProgress, [0, 1], ["0%", "-5%"]);
+  const xFilms = useTransform(scrollYProgress, [0, 1], ["0%", "5%"]);
+  const xDocumentary = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
 
   // Parallax translation mapping values for bottom ELEPHANT block and staircase
   const xElephant = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
@@ -73,7 +73,7 @@ export default function AboutPage() {
               style={{ clipPath: 'url(#gothicArch)' }}
             >
               <Image
-                src="/assets/678fb034c5b0d0c6213eba55_about_left.webp"
+                src="/media/wedding1/DSC03084_websize.jpg"
                 alt="Arch scene left"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
@@ -170,7 +170,7 @@ export default function AboutPage() {
               style={{ clipPath: 'url(#gothicArch)' }}
             >
               <Image
-                src="/assets/678fb040c3c8dea46d9111a0_about_right.webp"
+                src="/media/wedding2/untitled-20_websize.jpg"
                 alt="Arch scene right"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
@@ -279,7 +279,7 @@ export default function AboutPage() {
               </motion.div>
             </div>
             
-            <div className="div-block-11 pl-20">
+            <div className="div-block-11 pl-0 md:pl-20">
               <motion.div 
                 className="_5-line"
                 initial={{ scaleX: 0 }}
@@ -301,9 +301,9 @@ export default function AboutPage() {
         </div>
 
         {/* Big ELEPHANT block with rightside film list & metadata (Screenshot 2 bottom) */}
-        <div className="px-6 md:px-12 max-w-7xl mx-auto w-full flex flex-col lg:grid lg:grid-cols-12 gap-12 lg:gap-8 items-center relative overflow-hidden">
+        <div className="px-6 md:px-12 max-w-7xl mx-auto w-full flex flex-col gap-12 items-center relative overflow-hidden">
           {/* ELEPHANT Massive Logo text */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-start">
+          <div className="w-full flex justify-center lg:justify-start">
             <motion.h2 
               className="text-block-9 select-none"
               style={{ x: xElephant }}
@@ -317,9 +317,9 @@ export default function AboutPage() {
           </div>
 
           {/* Right side Film list and small coordinate structural text */}
-          <div className="lg:col-span-6 flex flex-col md:flex-row justify-between items-center md:items-start gap-12 w-full lg:pl-12">
+          <div className="w-full flex flex-col lg:flex-row justify-between items-center lg:items-start gap-12 lg:pl-12">
             {/* Film list */}
-            <div className="about-struct-tx items-center md:items-start">
+            <div className="about-struct-tx items-center lg:items-start">
               <motion.div 
                 className="about-title-tx-1"
                 style={{ x: xAna }}
@@ -354,7 +354,7 @@ export default function AboutPage() {
 
             {/* Small coordinate block */}
             <motion.div 
-              className="about-small-struct text-center md:text-left"
+              className="about-small-struct text-center lg:text-left"
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

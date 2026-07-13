@@ -393,6 +393,17 @@ next-portal,
   padding: 0.75rem 0;
 }
 
+@media (max-width: 1024px) {
+  .about-small-text-line {
+    justify-content: center;
+  }
+  .about-small-text-line span {
+    width: 100%;
+    text-align: center;
+    display: block;
+  }
+}
+
 .about-md-text {
   width: 100%;
   display: flex;
@@ -413,7 +424,7 @@ next-portal,
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 7.5vw, 9.5rem);
+  font-size: clamp(1.8rem, 4vw, 5.5rem);
   font-weight: 900;
   line-height: 0.9;
   text-transform: uppercase;
@@ -430,7 +441,7 @@ next-portal,
   width: 25vw;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .div-block-11 {
     flex-direction: column;
     gap: 1.5rem;
@@ -457,7 +468,7 @@ next-portal,
 
 .text-block-9 {
   font-family: var(--font-serif);
-  font-size: clamp(3.5rem, 13vw, 22rem);
+  font-size: clamp(3rem, 6vw, 10rem);
   line-height: 0.85;
   font-weight: 900;
   letter-spacing: -0.056em;
