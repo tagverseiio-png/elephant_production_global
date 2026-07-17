@@ -1,7 +1,6 @@
-# Elephant Production — Backend README
+# Elephant Production — Backend
 
-## Overview
-This is the Node.js/Express/MongoDB CMS backend that powers the Elephant Production site.
+Node.js/Express/MongoDB CMS backend (TypeScript) for the Elephant Production site.
 
 ---
 
@@ -10,7 +9,7 @@ This is the Node.js/Express/MongoDB CMS backend that powers the Elephant Product
 ### 1. Configure Environment
 ```bash
 cp .env.example .env
-# Edit .env and fill in your MONGO_URI, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
+# Edit .env and fill in MONGO_URI, JWT_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD
 ```
 
 ### 2. Install Dependencies
@@ -19,34 +18,43 @@ npm install
 ```
 
 ### 3. Seed the Database (first run only)
-Imports all 8 films, collaborators, and site settings from the existing static data:
 ```bash
 npm run seed
 ```
 
 ### 4. Start the Server
 ```bash
-# Development (auto-restarts on save)
+# Development (auto-restarts on save via tsx watch)
 npm run dev
 
-# Production
+# Production (compile then start)
+npm run build
 npm start
 ```
 
-The API will be running at: **http://localhost:4000**
+---
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Run in development with hot reload |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm start` | Run compiled JS from `dist/` |
+| `npm run seed` | Seed database with initial data |
 
 ---
 
 ## API Reference
 
-### Public Endpoints (no auth needed)
+### Public Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/health` | Server health check |
 | GET | `/api/films` | Get all published films |
 | GET | `/api/films/:id` | Get single film by slug |
 | GET | `/api/collaborators` | Get all collaborators |
-| GET | `/api/settings` | Get site settings (contact info, socials) |
+| GET | `/api/settings` | Get site settings |
 
 ### Admin Endpoints (Bearer token required)
 | Method | Endpoint | Description |
@@ -65,48 +73,24 @@ The API will be running at: **http://localhost:4000**
 
 ---
 
-## Admin Login Example
-```bash
-curl -X POST http://localhost:4000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@elephantproduction.com","password":"your_password"}'
-```
-
-Response:
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "admin": { "id": "...", "email": "admin@elephantproduction.com" }
-}
-```
-
-Use the token in all admin requests:
-```bash
-curl -X PUT http://localhost:4000/api/films/savoy \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Savoy Updated"}'
-```
-
----
-
-## Folder Structure
+## Project Structure
 ```
 backend/
-├── server.js              ← Express entry point
+├── server.ts              ← Entry point (TypeScript)
+├── tsconfig.json          ← TypeScript config
 ├── .env.example           ← Environment template
 ├── models/
-│   ├── Film.js            ← Film schema (all film data)
-│   ├── Collaborator.js    ← Collaborator schema
-│   ├── SiteSettings.js    ← Contact info, socials (singleton)
-│   └── Admin.js           ← Admin user with bcrypt password
+│   ├── Film.ts            ← Film schema (all film data)
+│   ├── Collaborator.ts    ← Collaborator schema
+│   ├── SiteSettings.ts    ← Contact info, socials (singleton)
+│   └── Admin.ts           ← Admin user with bcrypt password
 ├── routes/
-│   ├── auth.js            ← Login & token verification
-│   ├── films.js           ← Full CRUD for films
-│   ├── collaborators.js   ← Full CRUD for collaborators
-│   └── settings.js        ← Get/update site settings
+│   ├── auth.ts            ← Login & token verification
+│   ├── films.ts           ← Full CRUD for films
+│   ├── collaborators.ts   ← Full CRUD for collaborators
+│   └── settings.ts        ← Get/update site settings
 ├── middleware/
-│   └── auth.js            ← JWT verification middleware
+│   └── auth.ts            ← JWT verification middleware
 └── scripts/
-    └── seed.js            ← One-time data import from static files
+    └── seed.ts            ← Seed database with initial data
 ```

@@ -1,12 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Footer from '@/components/Footer';
 import DecryptedText from '@/components/DecryptedText';
-import { contactInfo } from '@/data/contact';
+import { publicApi, SiteSettings } from '@/lib/public-api';
 
 export default function ContactPage() {
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    publicApi.settings.get()
+      .then(setSettings)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !settings) {
+    return (
+      <div className="min-h-screen bg-[#FF0000] text-[#000000] select-none flex items-center justify-center">
+        <span className="font-mono text-[10px] tracking-widest uppercase">Loading...</span>
+      </div>
+    );
+  }
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -115,11 +133,11 @@ export default function ContactPage() {
                 PROJECT INQUIRIES
               </span>
               <a 
-                href={`mailto:${contactInfo.email}?subject=${encodeURIComponent(contactInfo.emailSubject)}`} 
+                href={`mailto:${settings.email}?subject=${encodeURIComponent(settings.emailSubject)}`} 
                 className="font-serif text-lg sm:text-xl md:text-2xl font-extrabold tracking-wide hover:text-black transition-colors mt-2 break-all"
                 data-cursor-text="MAIL"
               >
-                {contactInfo.email.toUpperCase()}
+                {settings.email.toUpperCase()}
               </a>
 
               {/* Bottom border line */}

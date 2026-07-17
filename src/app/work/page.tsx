@@ -5,42 +5,51 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { homeFilms } from '@/data/home_films';
 import DecryptedText from '@/components/DecryptedText';
 import { SmartVideo } from '@/components/SmartVideo';
-import { stillsGrid } from '@/data/stills';
+import { publicApi, Film } from '@/lib/public-api';
 
 export default function WorkPage() {
+  const [films, setFilms] = useState<Film[]>([]);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'poster' | 'footage'>('footage');
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  
-  // LERP Scrolling States
-  const [visualX, setVisualX] = useState(0);
+
+  useEffect(() => {
+    publicApi.films.list()
+      .then(setFilms)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
   const targetX = useRef(0);
   const currentX = useRef(0);
   const isDragging = useRef(false);
+  const isAnimating = useRef(false);
   const hasDragged = useRef(false);
   const dragStartX = useRef(0);
   const dragStartTargetX = useRef(0);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const footageTrackRef = useRef<HTMLDivElement>(null);
+  const posterTopRef = useRef<HTMLDivElement>(null);
+  const posterBottomRef = useRef<HTMLDivElement>(null);
 
-  const [cardWidth, setCardWidth] = useState(450); // Snapping step width
+  const [cardWidth, setCardWidth] = useState(450);
   const [trackOffset, setTrackOffset] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Dynamic card step calculation based on viewMode
   const handleResize = useCallback(() => {
     let width = 450;
     if (viewMode === 'footage') {
       width = window.innerWidth < 768 ? 320 : 450;
     } else {
-      width = window.innerWidth < 768 ? 200 : 260; // narrower step width for stills grid columns
+      width = window.innerWidth < 768 ? 200 : 260;
     }
     setCardWidth(width);
-    
-    const paddingLeft = window.innerWidth * 0.12; // 12vw
+
+    const paddingLeft = window.innerWidth * 0.12;
     const offset = window.innerWidth / 2 - paddingLeft - width / 2;
     setTrackOffset(offset);
   }, [viewMode]);
@@ -51,7 +60,6 @@ export default function WorkPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [handleResize]);
 
-  // Adjust scroll positions on viewMode changes to prevent catalog jumping
   const handleToggleMode = (mode: 'poster' | 'footage') => {
     const oldWidth = cardWidth;
     let newWidth = 450;
@@ -60,84 +68,62 @@ export default function WorkPage() {
     } else {
       newWidth = window.innerWidth < 768 ? 200 : 260;
     }
-    
-    setViewMode(mode);
-    setCardWidth(newWidth);
-    
+
     const ratio = newWidth / oldWidth;
     targetX.current = targetX.current * ratio;
-    currentX.current = currentX.current * ratio;
-    setVisualX(currentX.current);
-    
+
+    setViewMode(mode);
+    setCardWidth(newWidth);
+
     const paddingLeft = window.innerWidth * 0.12;
     const offset = window.innerWidth / 2 - paddingLeft - newWidth / 2;
     setTrackOffset(offset);
   };
 
-  // Sync activeIndex and dispatch event to update Navbar ticket drop-down
-  useEffect(() => {
-    const computedIndex = Math.min(
-      Math.max(Math.round(-currentX.current / cardWidth), 0),
-      homeFilms.length - 1
-    );
-    if (computedIndex !== activeIndex) {
-      setActiveIndex(computedIndex);
-      // Dispatch active film change to Navbar
-      const film = homeFilms[computedIndex];
-      if (film) {
-        window.dispatchEvent(new CustomEvent('elephant-active-film', { detail: film.id }));
+  const maxScroll = -(films.length - 1) * cardWidth;
+  const startLoopFn = useRef<() => void>(() => {});
+
+  function applyTransform() {
+    const x = currentX.current;
+    const offset = x + trackOffset;
+    if (viewMode === 'footage') {
+      if (footageTrackRef.current) {
+        footageTrackRef.current.style.transform = `translate3d(${offset}px, 0px, 0px)`;
+      }
+    } else {
+      if (posterTopRef.current) {
+        posterTopRef.current.style.transform = `translate3d(${offset}px, 0px, 0px)`;
+      }
+      if (posterBottomRef.current) {
+        posterBottomRef.current.style.transform = `translate3d(${(maxScroll - x) + trackOffset + cardWidth / 2}px, 0px, 0px)`;
       }
     }
-  }, [visualX, cardWidth, activeIndex]);
+  }
 
-  // Dispatch initial active film on mount
-  useEffect(() => {
-    if (homeFilms[0]) {
-      window.dispatchEvent(new CustomEvent('elephant-active-film', { detail: homeFilms[0].id }));
+  function syncState() {
+    const vx = currentX.current;
+    const idx = Math.min(Math.max(Math.round(-vx / cardWidth), 0), films.length - 1);
+    if (idx !== activeIndex) {
+      setActiveIndex(idx);
+      const film = films[idx];
+      if (film) window.dispatchEvent(new CustomEvent('elephant-active-film', { detail: film.id }));
     }
-  }, []);
-
-  // Easing tick loop (LERP)
-  useEffect(() => {
-    let animationFrameId: number;
-
-    const tick = () => {
-      if (!isDragging.current) {
-        currentX.current = currentX.current + (targetX.current - currentX.current) * 0.08;
-        if (Math.abs(targetX.current - currentX.current) < 0.1) {
-          currentX.current = targetX.current;
-        }
-        setVisualX(currentX.current);
-      }
-      animationFrameId = requestAnimationFrame(tick);
-    };
-
-    animationFrameId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
-
-  const maxScroll = -(homeFilms.length - 1) * cardWidth;
+  }
 
   const snapToNearestCard = useCallback(() => {
-    let snapped = Math.round(targetX.current / cardWidth) * cardWidth;
-    snapped = Math.min(Math.max(snapped, maxScroll), 0);
+    const snapped = Math.min(Math.max(Math.round(targetX.current / cardWidth) * cardWidth, maxScroll), 0);
     targetX.current = snapped;
+    startLoopFn.current();
   }, [cardWidth, maxScroll]);
 
-  // Mouse wheel horizontal scroller
+  // Mouse wheel
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
-      const scrollSpeed = 0.95;
-      targetX.current = Math.min(
-        Math.max(targetX.current - e.deltaY * scrollSpeed, maxScroll - 150),
-        150
-      );
-
+      targetX.current = Math.min(Math.max(targetX.current - e.deltaY * 0.95, maxScroll - 150), 150);
+      startLoopFn.current();
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        snapToNearestCard();
-      }, 150);
+      scrollTimeoutRef.current = setTimeout(() => { snapToNearestCard(); }, 150);
     };
 
     const sliderEl = sliderRef.current;
@@ -146,91 +132,130 @@ export default function WorkPage() {
     }
 
     return () => {
-      if (sliderEl) {
-        sliderEl.removeEventListener('wheel', handleWheel);
-      }
+      if (sliderEl) sliderEl.removeEventListener('wheel', handleWheel);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, [maxScroll, snapToNearestCard]);
 
-  // Pointer/Touch Drag Handlers
+  // Drag handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
     hasDragged.current = false;
     dragStartX.current = e.clientX;
     dragStartTargetX.current = targetX.current;
-    if (sliderRef.current) {
-      sliderRef.current.setPointerCapture(e.pointerId);
-    }
+    startLoopFn.current();
+    if (sliderRef.current) sliderRef.current.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
     const deltaX = e.clientX - dragStartX.current;
-    if (Math.abs(deltaX) > 5) {
-      hasDragged.current = true;
-    }
-    const dragMultiplier = 1.25;
-    let nextTarget = dragStartTargetX.current + deltaX * dragMultiplier;
-    
-    // Resistance boundary checks
+    if (Math.abs(deltaX) > 5) hasDragged.current = true;
+    let nextTarget = dragStartTargetX.current + deltaX * 1.25;
     if (nextTarget > 0) {
       nextTarget = nextTarget * 0.3;
     } else if (nextTarget < maxScroll) {
       nextTarget = maxScroll + (nextTarget - maxScroll) * 0.3;
     }
-
     targetX.current = nextTarget;
     currentX.current = nextTarget;
-    setVisualX(nextTarget);
+    applyTransform();
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
     isDragging.current = false;
-    if (sliderRef.current) {
-      sliderRef.current.releasePointerCapture(e.pointerId);
-    }
+    if (sliderRef.current) sliderRef.current.releasePointerCapture(e.pointerId);
     snapToNearestCard();
+    startLoopFn.current();
   };
 
-  const progress = maxScroll !== 0 ? Math.min(Math.max(visualX / maxScroll, 0), 1) : 0;
-  const activeFilm = homeFilms[activeIndex];
+  // Key handlers
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isDragging.current) return;
+    if (e.key === 'ArrowRight') {
+      targetX.current = Math.max(targetX.current - cardWidth, maxScroll);
+      startLoopFn.current();
+      snapToNearestCard();
+    } else if (e.key === 'ArrowLeft') {
+      targetX.current = Math.min(targetX.current + cardWidth, 0);
+      startLoopFn.current();
+      snapToNearestCard();
+    }
+  };
+
+  // LERP tick — only runs while animating (drag, wheel, snap)
+  useEffect(() => {
+    let rafId: number;
+
+    function tick() {
+      currentX.current = currentX.current + (targetX.current - currentX.current) * 0.08;
+
+      if (Math.abs(targetX.current - currentX.current) < 0.1) {
+        currentX.current = targetX.current;
+        isAnimating.current = false;
+        applyTransform();
+        syncState();
+        return;
+      }
+
+      applyTransform();
+      syncState();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    startLoopFn.current = () => {
+      if (isAnimating.current) return;
+      isAnimating.current = true;
+      tick();
+    };
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      isAnimating.current = false;
+    };
+  }, [viewMode, cardWidth, trackOffset]);
+
+  // Dispatch initial active film
+  useEffect(() => {
+    if (films[0]) {
+      window.dispatchEvent(new CustomEvent('elephant-active-film', { detail: films[0].id }));
+    }
+  }, []);
+
+  const progress = maxScroll !== 0 ? Math.min(Math.max(currentX.current / maxScroll, 0), 1) : 0;
+  const activeFilm = films[activeIndex];
+
+  if (loading) {
+    return (
+      <div className="bg-[#030303] h-screen w-full flex items-center justify-center">
+        <div className="text-white/50 font-mono text-[10px] tracking-widest">LOADING...</div>
+      </div>
+    );
+  }
 
   return (
     <div
       data-page="work"
       className="pw h-screen work relative select-none"
-      onKeyDown={(e) => {
-        if (isDragging.current) return;
-        if (e.key === 'ArrowRight') {
-          const nextTarget = Math.max(targetX.current - cardWidth, maxScroll);
-          targetX.current = nextTarget;
-          snapToNearestCard();
-        } else if (e.key === 'ArrowLeft') {
-          const nextTarget = Math.min(targetX.current + cardWidth, 0);
-          targetX.current = nextTarget;
-          snapToNearestCard();
-        }
-      }}
+      onKeyDown={handleKeyDown}
       tabIndex={0}
       aria-label="Film gallery — use arrow keys to navigate"
     >
-      
+
       {/* Background grain noise texture */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.035] pointer-events-none z-50"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
         }}
       />
 
-      {/* 2. work-edge top (Toggle Switcher) */}
+      {/* Toggle Switcher */}
       <div data-cursor="hide" className="absolute top-20 sm:top-12 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center pointer-events-auto">
-        <div data-work="toggleWrapper" className={`toggle-switch-cont`}>
+        <div data-work="toggleWrapper" className="toggle-switch-cont">
           <ul data-work="toggle" role="list" className="list w-list-unstyled">
-            
-            {/* Footage view switch */}
+
             <li className="work-toggle-w">
               <button
                 onClick={() => handleToggleMode('footage')}
@@ -245,8 +270,7 @@ export default function WorkPage() {
                 </svg>
               </button>
             </li>
-            
-            {/* Poster view switch */}
+
             <li className="work-toggle-w">
               <button
                 onClick={() => handleToggleMode('poster')}
@@ -259,13 +283,9 @@ export default function WorkPage() {
                 </svg>
               </button>
             </li>
-            
+
           </ul>
-          
-          {/* Background pill selector block */}
           <div className={`abs trig-bg ${viewMode === 'footage' ? 'footage-pos' : 'poster-pos'}`} />
-          
-          {/* Switch label text */}
           <div className="toggle-switch-w">
             <div className="toggle-switch">
               <div className="switch-bg"></div>
@@ -278,14 +298,12 @@ export default function WorkPage() {
               </div>
             </div>
           </div>
-          
         </div>
       </div>
 
-      {/* 5. work-vert-line (Center vertical line) */}
       <div className="work-vert-line"></div>
 
-      {/* 3. work-roll (Draggable horizontal slider) */}
+      {/* Draggable horizontal slider */}
       <div
         ref={sliderRef}
         className="work-roll select-none cursor-grab active:cursor-grabbing"
@@ -296,18 +314,15 @@ export default function WorkPage() {
         data-cursor-text="DRAG"
       >
         {viewMode === 'footage' ? (
-          // Footage View Mode: Vertical film cards slider
           <div
+            ref={footageTrackRef}
             className="flex h-full items-center justify-start px-[12vw] will-change-transform"
-            style={{
-              transform: `translate3d(${visualX + trackOffset}px, 0px, 0px)`
-            }}
           >
-            {homeFilms.map((film, index) => {
+            {films.map((film, index) => {
               const isSelected = index === activeIndex;
-              const cardVisualOffset = visualX + index * cardWidth;
+              const cardVisualOffset = currentX.current + index * cardWidth;
               const parallaxX = cardVisualOffset * -0.15;
-              
+
               return (
                 <motion.div
                   key={film.id}
@@ -326,13 +341,11 @@ export default function WorkPage() {
                   whileHover={{ y: -15, opacity: 1, scale: isSelected ? 1.02 : 0.95 }}
                   transition={{ duration: 0.5, ease: [0.77, 0, 0.175, 1] as const }}
                 >
-                  {/* Poster Frame image container */}
                   <div className="relative w-full h-[50%] sm:h-[58%] rounded-xl overflow-hidden border border-elephant-ivory/10 bg-elephant-ivory/5 shadow-2xl transition-shadow duration-500 group-hover:shadow-[0_30px_60px_-15px_rgba(255,255,255,0.1)]">
                     <motion.div
                       className="h-full w-[130%] absolute -left-[15%]"
                       style={{ x: parallaxX }}
                     >
-                      {/* Background static still image */}
                       <Image
                         src={film.stillImage}
                         alt={film.title}
@@ -346,7 +359,6 @@ export default function WorkPage() {
                         }`}
                       />
 
-                      {/* Loop preview video overlay slides in from bottom like a card slot */}
                       {film.trailerVideo && (
                         <SmartVideo
                           className={`absolute inset-0 h-full w-full object-cover pointer-events-none transition-transform duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${isSelected ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'}`}
@@ -356,8 +368,6 @@ export default function WorkPage() {
                       )}
                     </motion.div>
 
-
-                    {/* Top Left rating badge laurels overlay */}
                     {film.awardLaurel && (
                       <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-[#000000]/80 px-2.5 py-1 rounded backdrop-blur-[2px] border border-elephant-ivory/10">
                         {film.awardLogo && (
@@ -376,7 +386,6 @@ export default function WorkPage() {
                     )}
                   </div>
 
-                  {/* Card Lined Detail table metadata block */}
                   <div className="mt-5 sm:mt-6 flex-1 flex flex-col justify-start gap-3 sm:justify-between text-center sm:text-left">
                     <div>
                       <span className="font-mono text-[9px] font-bold tracking-widest text-elephant-red uppercase block transition-colors duration-300 group-hover:text-elephant-ivory">
@@ -391,7 +400,6 @@ export default function WorkPage() {
                       </h2>
                     </div>
 
-                    {/* Lined Metadata Table Grid */}
                     <div className="border-t border-elephant-ivory/15 pt-2 mt-2 sm:mt-4 space-y-1 text-[10px] font-mono opacity-80 group-hover:opacity-100 transition-opacity duration-300 text-left">
                       <div className="flex justify-between py-1 border-b border-elephant-ivory/5">
                         <span className="text-elephant-ivory/40 uppercase">YEAR</span>
@@ -412,21 +420,17 @@ export default function WorkPage() {
             })}
           </div>
         ) : (
-          // Poster View Mode: Two independent rows scrolling in opposite directions
           <div className="flex flex-col gap-8 justify-center h-full w-full pointer-events-auto">
-            {/* Top Row Stills (scrolls forward) */}
             <div className="overflow-hidden flex items-center w-full">
               <div
+                ref={posterTopRef}
                 className="flex will-change-transform"
-                style={{
-                  transform: `translate3d(${visualX + trackOffset}px, 0px, 0px)`
-                }}
               >
                 <div style={{ width: '12vw' }} className="shrink-0" />
                 {Array.from({ length: 9 }).map((_, colIdx) => {
                   const isSelected = colIdx === activeIndex;
-                  const topStill = stillsGrid[colIdx];
-                  
+                  const topStill = films[colIdx % films.length]?.stillImage;
+
                   return (
                     <motion.div
                       key={colIdx}
@@ -442,7 +446,7 @@ export default function WorkPage() {
                       whileHover={{ scale: 1.05, opacity: 1, zIndex: 10 }}
                       transition={{ duration: 0.5, ease: [0.77, 0, 0.175, 1] }}
                       onClick={(e) => {
-                        const targetFilm = homeFilms[colIdx % homeFilms.length];
+                        const targetFilm = films[colIdx % films.length];
                         if (targetFilm && !hasDragged.current) {
                           router.push(`/films/${targetFilm.id}`);
                         }
@@ -450,7 +454,7 @@ export default function WorkPage() {
                     >
                       <Image
                         src={topStill}
-                        alt={homeFilms[colIdx % homeFilms.length]?.title ?? `Film still ${colIdx + 1}`}
+                        alt={films[colIdx % films.length]?.title ?? `Film still ${colIdx + 1}`}
                         fill
                         sizes="(max-width: 768px) 250px, 300px"
                         className={`object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
@@ -463,23 +467,20 @@ export default function WorkPage() {
               </div>
             </div>
 
-            {/* Bottom Row Stills (scrolls backward) */}
             <div className="overflow-hidden flex items-center w-full">
               <div
+                ref={posterBottomRef}
                 className="flex will-change-transform"
-                style={{
-                  transform: `translate3d(${(maxScroll - visualX) + trackOffset + cardWidth / 2}px, 0px, 0px)`
-                }}
               >
                 <div style={{ width: '12vw' }} className="shrink-0" />
                 {Array.from({ length: 9 }).map((_, colIdx) => {
                   const row2ActiveIndex = Math.min(
-                    Math.max(Math.round(-(maxScroll - visualX) / cardWidth - 0.5), 0),
+                    Math.max(Math.round(-(maxScroll - currentX.current) / cardWidth - 0.5), 0),
                     8
                   );
                   const isSelected = colIdx === row2ActiveIndex;
-                  const bottomStill = stillsGrid[colIdx + 9];
-                  
+                  const bottomStill = films[(colIdx + 2) % films.length]?.stillImage;
+
                   return (
                     <motion.div
                       key={colIdx}
@@ -495,7 +496,7 @@ export default function WorkPage() {
                       whileHover={{ scale: 1.05, opacity: 1, zIndex: 10 }}
                       transition={{ duration: 0.5, ease: [0.77, 0, 0.175, 1] }}
                       onClick={(e) => {
-                        const targetFilm = homeFilms[(colIdx + 2) % homeFilms.length];
+                        const targetFilm = films[(colIdx + 2) % films.length];
                         if (targetFilm && !hasDragged.current) {
                           router.push(`/films/${targetFilm.id}`);
                         }
@@ -503,7 +504,7 @@ export default function WorkPage() {
                     >
                       <Image
                         src={bottomStill}
-                        alt={homeFilms[(colIdx + 2) % homeFilms.length]?.title ?? `Film still ${colIdx + 10}`}
+                        alt={films[(colIdx + 2) % films.length]?.title ?? `Film still ${colIdx + 10}`}
                         fill
                         sizes="(max-width: 768px) 250px, 300px"
                         className={`object-cover transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 ${
@@ -519,10 +520,9 @@ export default function WorkPage() {
         )}
       </div>
 
-      {/* 4. work-edge bottom (Ruler + Explore) */}
+      {/* Bottom ruler + explore */}
       <div data-slider="additionaltrigger" data-cursor="hide" className="work-edge bottom pointer-events-none">
-        
-        {/* Left Side: Active Film Info (for Poster Mode only, to balance structure) */}
+
         <div className="w-48 shrink-0 flex items-center gap-3 order-3 sm:order-none">
           <AnimatePresence>
             {viewMode === 'poster' && (
@@ -555,7 +555,6 @@ export default function WorkPage() {
           </AnimatePresence>
         </div>
 
-        {/* Center: Measuring Tape Ruler Scroll indicator */}
         <div className="pointer-events-auto flex flex-col items-center gap-2 select-none order-2 sm:order-none">
           <div className="relative flex items-end justify-between h-6 w-56 border-b border-elephant-ivory/15 pb-1">
             {Array.from({ length: 21 }).map((_, idx) => {
@@ -579,11 +578,10 @@ export default function WorkPage() {
           </div>
 
           <div className="font-mono text-[9px] text-elephant-ivory/30 tracking-widest uppercase">
-            0{activeIndex + 1} {"//"} 0{homeFilms.length}
+            0{activeIndex + 1} {"//"} 0{films.length}
           </div>
         </div>
 
-        {/* Right Side: Explore button */}
         <div className="pointer-events-auto shrink-0 sm:w-48 flex justify-center sm:justify-end order-1 sm:order-none">
           <Link
             href={`/films/${activeFilm.id}`}

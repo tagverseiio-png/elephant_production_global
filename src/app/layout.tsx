@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
-import SmoothScroll from '@/components/SmoothScroll';
+import PageWrapper from '@/components/PageWrapper';
 
 export const metadata: Metadata = {
   title: 'Elephant Productions',
@@ -26,12 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body className="font-sans antialiased bg-elephant-ivory text-elephant-black min-h-screen flex flex-col">
         <Navbar />
-        <SmoothScroll>
-          <main className="flex-1 flex flex-col">{children}</main>
-        </SmoothScroll>
+        <PageWrapper>
+          {children}
+        </PageWrapper>
 
         {/* Global SVG mask and filter definitions for ticket cutouts, torn edges, and gothic arches */}
         <svg className="absolute h-0 w-0" aria-hidden="true">

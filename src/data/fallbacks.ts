@@ -27,10 +27,10 @@ export interface FilmData {
 }
 
 export const fallbackGallery = [
-  '/assets/6750c22f214b0f9818f5a920_Savoy%20(0-01-02-06).webp',
-  '/assets/6750c22fdcfc0cba857005bd_Savoy%20(0-02-12-07).webp',
-  '/assets/6750c201c90bd57118d82564_Moon12%20Prores422hq%20Lt%20Rt%2002.06.16%20(0-01-02-01).webp',
-  '/assets/6750c201e3f9c080ac8abee3_Moon12%20Prores422hq%20Lt%20Rt%2002.06.16%20(0-17-03-13).webp'
+  '/api/media/wedding1/DSC02481_websize.jpg',
+  '/api/media/wedding1/DSC02509_websize.jpg',
+  '/api/media/wedding1/DSC02918_websize.jpg',
+  '/api/media/wedding1/DSC03065_websize.jpg',
 ];
 
 export const fallbackReviews = [
@@ -39,10 +39,7 @@ export const fallbackReviews = [
   { source: 'IndieWire', text: 'A bold, brave entry into contemporary cinema.' }
 ];
 
-export const fallbackAwards = [
-  { logo: '/assets/67b33c467d57178b71d24834_FIPADOC.png', category: 'International Competition', title: 'Fipadoc Biarritz' },
-  { logo: '/assets/67b33c6262a32eb13aa6ee89_Santa%20Barbara%20International%20Film%20Festival.png', category: 'Official Selection', title: 'Santa Barbara Film Festival' }
-];
+export const fallbackAwards: Award[] = [];
 
 export const defaultCrewList = (directorName: string) => [
   { role: 'Director', name: directorName },

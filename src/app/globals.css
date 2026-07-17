@@ -36,6 +36,16 @@
   --ease-elephant-panels: var(--ease-elephant-panels);
 }
 
+/* Soft bounce animation (compositor thread, no JS overhead) */
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.animate-bounce-soft {
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
 /* Hide scrollbars globally */
 * {
   box-sizing: border-box;

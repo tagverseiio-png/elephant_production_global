@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { homeFilms as films } from '@/data/home_films';
+import { publicApi, Film } from '@/lib/public-api';
 
 const LaurelWreath = ({ text }: { text: string }) => (
   <div className="flex flex-col items-center justify-center text-center text-white/95 max-w-[150px] select-none">
@@ -15,20 +15,18 @@ const LaurelWreath = ({ text }: { text: string }) => (
   </div>
 );
 
-const FilmCard = ({ film, index }: { film: typeof films[0]; index: number }) => (
+const FilmCard = ({ film, index }: { film: Film; index: number }) => (
   <div
     id={`film-card-wrapper-${index}`}
     className="film-card-wrapper w-full h-[75vh] sm:h-[80vh] md:h-[85vh] shrink-0 flex items-center justify-center snap-center px-4 md:px-8"
   >
-    {/* Inner Card Container - will-change added for absolute GPU hardware rendering speed */}
+    {/* Inner Card Container */}
     <div
       id={`film-card-inner-${index}`}
       className="film-card-inner relative w-full h-full max-w-[1600px] aspect-[16/9] overflow-hidden flex flex-col justify-between p-8 sm:p-12 md:p-16 lg:p-20"
       style={{
         clipPath: 'url(#smoothHandDrawnClip)',
-        backgroundColor: '#070707',
-        willChange: 'transform, opacity',
-        transform: 'translate3d(0,0,0) scale(1)'
+        backgroundColor: '#070707'
       }}
     >
       {/* Background imagery with cinematic gradient layer */}
@@ -103,17 +101,22 @@ const FilmCard = ({ film, index }: { film: typeof films[0]; index: number }) => 
 
 const App = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [activeScroll, setActiveScroll] = useState(false);
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const rAFRef = useRef<number | null>(null);
+  const [films, setFilms] = useState<Film[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // We loop 5 copies of the film sequence to ensure absolute scroll buffer in both directions
+  useEffect(() => {
+    publicApi.films.list()
+      .then(setFilms)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  // 3 copies for scroll buffer
   const loopedFilms = [
-    ...films, // Set 0
-    ...films, // Set 1
-    ...films, // Set 2 (Center Anchor)
-    ...films, // Set 3
-    ...films  // Set 4
+    ...films,
+    ...films,
+    ...films
   ];
 
   useEffect(() => {
@@ -122,14 +125,13 @@ const App = () => {
 
     const N = films.length;
 
-    // Initializes loading spot accurately in the center array sequence
     const initializePosition = () => {
       if (!container) return;
       const children = container.children;
-      if (children.length < N * 5) return;
+      if (children.length < N * 3) return;
 
       const firstCard = children[0] as HTMLElement;
-      const middleCard = children[N * 2] as HTMLElement; // Start of Set 2
+      const middleCard = children[N] as HTMLElement;
 
       if (firstCard && middleCard) {
         const targetScroll = middleCard.offsetTop - firstCard.offsetTop;
@@ -139,7 +141,6 @@ const App = () => {
       }
     };
 
-    // Run positioning once the component finishes loading
     setTimeout(() => {
       initializePosition();
       window.dispatchEvent(new Event('elephant-preloader-complete'));
@@ -147,31 +148,29 @@ const App = () => {
 
     const handleScroll = () => {
       if (!container) return;
-      // Cancel any outstanding animation frame to prevent frame bundling
       if (rAFRef.current) {
         cancelAnimationFrame(rAFRef.current);
       }
 
       rAFRef.current = requestAnimationFrame(() => {
         const children = container.children;
-        if (children.length < N * 5) return;
+        if (children.length < N * 3) return;
 
         const firstCard = children[0] as HTMLElement;
-        const secondSetCard = children[N] as HTMLElement;      // Start of Set 1
-        const fourthSetCard = children[N * 3] as HTMLElement;  // Start of Set 3
+        const set1Card = children[N] as HTMLElement;
+        const set2Card = children[N * 2] as HTMLElement;
 
-        const cycleHeight = secondSetCard.offsetTop - firstCard.offsetTop;
+        const cycleHeight = set1Card.offsetTop - firstCard.offsetTop;
 
-        // Teleports scrolling seamlessly when borders are bypassed
-        if (container.scrollTop < secondSetCard.offsetTop) {
+        if (container.scrollTop < set1Card.offsetTop) {
           container.style.scrollBehavior = 'auto';
-          container.scrollTop += cycleHeight * 2;
+          container.scrollTop += cycleHeight;
           container.style.scrollBehavior = 'smooth';
           return;
         }
-        else if (container.scrollTop > fourthSetCard.offsetTop) {
+        else if (container.scrollTop > set2Card.offsetTop) {
           container.style.scrollBehavior = 'auto';
-          container.scrollTop -= cycleHeight * 2;
+          container.scrollTop -= cycleHeight;
           container.style.scrollBehavior = 'smooth';
           return;
         }
@@ -184,10 +183,17 @@ const App = () => {
     return () => {
       container.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', initializePosition);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       if (rAFRef.current) cancelAnimationFrame(rAFRef.current);
     };
-  }, []);
+    }, [films.length]);
+
+  if (loading) {
+    return (
+      <div className="bg-[#030303] min-h-screen w-full flex items-center justify-center">
+        <div className="text-white/50 font-mono text-[10px] tracking-widest">LOADING...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#030303] min-h-screen w-full relative overflow-hidden font-sans select-none">

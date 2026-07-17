@@ -6,10 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '@/components/Footer';
-import filmsDatabase from '@/data/films.json';
-import { homeFilms } from '@/data/home_films';
 import DecryptedText from '@/components/DecryptedText';
-import { fallbackGallery, fallbackReviews, fallbackAwards, defaultCrewList, FilmData } from '@/data/fallbacks';
+import { publicApi, Film } from '@/lib/public-api';
 
 export default function FilmDetailPage() {
   const params = useParams();
@@ -19,12 +17,6 @@ export default function FilmDetailPage() {
   const [isTrailerMuted, setIsTrailerMuted] = useState(false);
   const trailerVideoRef = useRef<HTMLVideoElement>(null);
 
-  // Retrieve basic info from homeFilms catalog
-  const baseInfo = homeFilms.find((f) => f.id === filmId);
-  
-  // Retrieve detailed info from films.json database
-  const details = (filmsDatabase as unknown as Record<string, Partial<FilmData>>)[filmId];
-
   // Dispatch active film to Navbar on mount and scroll back to top
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -33,7 +25,29 @@ export default function FilmDetailPage() {
     }
   }, [filmId]);
 
-  if (!baseInfo) {
+  const [films, setFilms] = useState<Film[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    publicApi.films.list()
+      .then(setFilms)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const film = films.find(f => f.id === filmId);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-elephant-ivory text-elephant-black">
+        <div className="text-center">
+          <p className="font-serif text-2xl italic">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!film) {
     return (
       <div className="flex h-screen items-center justify-center bg-elephant-ivory text-elephant-black">
         <div className="text-center space-y-4">
@@ -47,22 +61,17 @@ export default function FilmDetailPage() {
   }
 
   // Find adjacent film to show as "Next Project" footer preview
-  const currentIdx = homeFilms.findIndex((f) => f.id === filmId);
-  const nextIdx = (currentIdx + 1) % homeFilms.length;
-  const nextFilm = homeFilms[nextIdx];
+  const currentIdx = films.findIndex((f) => f.id === filmId);
+  const nextIdx = (currentIdx + 1) % films.length;
+  const nextFilm = films[nextIdx];
 
-  // Resolve assets with clean default fallbacks
-  const heroImage = details?.hero_image || baseInfo.stillImage;
-  const directorImage = details?.director_image || heroImage;
-  const trailerUrl = details?.trailer_url ?? '';
-  const galleryStills = details?.gallery_images && details.gallery_images.length > 0 ? details.gallery_images : fallbackGallery;
-  const reviewsList = details?.reviews && details.reviews.length > 0 ? details.reviews : fallbackReviews;
-  const awardsList = details?.awards && details.awards.length > 0 ? details.awards : fallbackAwards;
-  
-  // Clean up crew lists
-  const crewList = details?.credits && details.credits.length > 0 
-    ? details.credits 
-    : defaultCrewList(baseInfo.director);
+  const heroImage = film.hero_image || film.stillImage;
+  const directorImage = film.director_image || heroImage;
+  const trailerUrl = film.trailerVideo ?? '';
+  const galleryStills = film.gallery_images?.length ? film.gallery_images : (film.stillImage ? [film.stillImage] : []);
+  const reviewsList = film.reviews?.length ? film.reviews : [];
+  const awardsList = film.awards?.length ? film.awards : [];
+  const crewList = film.credits?.length ? film.credits : [{ role: 'Director', name: film.director }];
 
   const handleOpenTrailer = () => {
     setIsPlayingTrailer(true);
@@ -140,7 +149,7 @@ export default function FilmDetailPage() {
           {/* Vertical Ticket Serial Codes on outer edges */}
           <div className="absolute top-1/2 -translate-y-1/2 left-3.5 z-20 hidden md:block select-none pointer-events-none">
             <span className="font-mono text-[7px] text-[#000000]/30 tracking-[0.35em] font-bold uppercase block rotate-90 origin-left whitespace-nowrap translate-x-2">
-              ADMIT ONE • № {baseInfo.year}-009
+              ADMIT ONE • № {film.year}-009
             </span>
           </div>
 
@@ -173,7 +182,7 @@ export default function FilmDetailPage() {
               <div className="absolute inset-0 opacity-15 pointer-events-none z-0 mix-blend-multiply">
                 <Image
                   src={heroImage}
-                  alt={baseInfo.title}
+                  alt={film.title}
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 100vw"
@@ -188,11 +197,11 @@ export default function FilmDetailPage() {
                 <div className="lg:col-span-6 space-y-6 lg:pr-8">
                   
                   {/* Top Laurels / Festival badges */}
-                  {baseInfo.awardLaurel && (
+                  {film.awardLaurel && (
                     <div className="flex items-center gap-3">
-                      {baseInfo.awardLogo && (
+                      {film.awardLogo && (
                         <Image
-                          src={baseInfo.awardLogo}
+                          src={film.awardLogo}
                           alt="Festival Logo"
                           width={40}
                           height={32}
@@ -200,17 +209,17 @@ export default function FilmDetailPage() {
                         />
                       )}
                       <span className="font-mono text-[8px] font-bold tracking-widest text-elephant-red">
-                        {baseInfo.year} {"//"} {baseInfo.awardLaurel.toUpperCase()}
+                        {film.year} {"//"} {film.awardLaurel.toUpperCase()}
                       </span>
                     </div>
                   )}
 
                   <div className="space-y-1">
                     <span className="font-mono text-[8px] font-bold tracking-widest text-[#000000]/50 uppercase block">
-                      {baseInfo.category}
+                      {film.category}
                     </span>
                     <h1 className="font-serif text-3xl md:text-5xl font-extrabold tracking-wide uppercase leading-tight text-elephant-black">
-                      <DecryptedText text={baseInfo.title} />
+                      <DecryptedText text={film.title} />
                     </h1>
                   </div>
 
@@ -218,15 +227,15 @@ export default function FilmDetailPage() {
                   <div className="border-t border-[#000000]/25 pt-4 space-y-2 text-[10px] font-mono max-w-sm">
                     <div className="flex justify-between py-1.5 border-b border-[#000000]/10">
                       <span className="text-[#000000]/55">DIRECTOR</span>
-                      <span className="font-semibold uppercase">{baseInfo.director}</span>
+                      <span className="font-semibold uppercase">{film.director}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-[#000000]/10">
                       <span className="text-[#000000]/55">YEAR</span>
-                      <span className="font-semibold">{baseInfo.year}</span>
+                      <span className="font-semibold">{film.year}</span>
                     </div>
                     <div className="flex justify-between py-1.5 border-b border-[#000000]/10">
                       <span className="text-[#000000]/55">CATEGORY</span>
-                      <span className="font-semibold uppercase">{baseInfo.category}</span>
+                      <span className="font-semibold uppercase">{film.category}</span>
                     </div>
                   </div>
                 </div>
@@ -328,7 +337,7 @@ export default function FilmDetailPage() {
                 DIRECTED BY
               </span>
               <h3 className="font-serif text-2xl font-semibold text-elephant-black leading-tight uppercase">
-                {baseInfo.director}
+                {film.director}
               </h3>
             </div>
           </div>

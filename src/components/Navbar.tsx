@@ -5,16 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { homeFilms } from '@/data/home_films';
-
-const navFilms = homeFilms.map(film => ({
-  id: film.id,
-  title: film.title,
-  category: film.category,
-  year: film.year,
-  duration: '00', 
-  image: film.stillImage
-}));
+import { publicApi, Film } from '@/lib/public-api';
+import { navLinks, legalLinks, socialLinks } from '@/data/contact';
 
 /* ──────────────────────────────────────────────
    Ticket dimensions (px):
@@ -36,11 +28,28 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const initialFilmId = pathname?.startsWith('/films/') ? (pathname.split('/').pop() || null) : null;
-  const [activeFilmId, setActiveFilmId] = useState<string | null>(initialFilmId);
-  const [prevPathname, setPrevPathname] = useState(pathname);
+  const [activeFilmId, setActiveFilmId] = useState<string | null>(
+    pathname?.startsWith('/films/') ? (pathname.split('/').pop() || null) : null
+  );
   const [isTicketDropdownOpen, setIsTicketDropdownOpen] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(pathname !== '/');
+  const [showNavbar, setShowNavbar] = useState(pathname !== '/' && !pathname?.startsWith('/admin'));
+  const [films, setFilms] = useState<Film[]>([]);
+  const [filmsLoaded, setFilmsLoaded] = useState(false);
+
+  useEffect(() => {
+    publicApi.films.list()
+      .then(setFilms)
+      .catch(console.error)
+      .finally(() => setFilmsLoaded(true));
+  }, []);
+
+  const navFilms = films.map(film => ({
+    id: film.id,
+    title: film.title,
+    category: film.category,
+    year: film.year,
+    image: film.stillImage
+  }));
 
   useEffect(() => {
     const updateTW = () => setTW(window.innerWidth < 640 ? TW_MOBILE : TW_DESKTOP);
@@ -50,25 +59,23 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (pathname === '/') {
-      setShowNavbar(false);
-    } else {
-      setShowNavbar(true);
-    }
-
-    const handlePreloaderComplete = () => setShowNavbar(true);
-    window.addEventListener('elephant-preloader-complete', handlePreloaderComplete);
-    return () => window.removeEventListener('elephant-preloader-complete', handlePreloaderComplete);
+    setShowNavbar(pathname !== '/' && !pathname?.startsWith('/admin'));
   }, [pathname]);
 
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
+  // Sync activeFilmId when pathname changes
+  useEffect(() => {
     if (pathname?.startsWith('/films/')) {
       setActiveFilmId(pathname.split('/').pop() || null);
     } else {
       setActiveFilmId(null);
     }
-  }
+  }, [pathname]);
+
+  useEffect(() => {
+    const handlePreloaderComplete = () => setShowNavbar(true);
+    window.addEventListener('elephant-preloader-complete', handlePreloaderComplete);
+    return () => window.removeEventListener('elephant-preloader-complete', handlePreloaderComplete);
+  }, []);
 
   useEffect(() => {
     const handler = (e: Event) => setActiveFilmId((e as CustomEvent).detail);
@@ -77,7 +84,17 @@ export default function Navbar() {
   }, []);
 
   const closeAll = () => { setIsOpen(false); setIsTicketDropdownOpen(false); };
-  const activeFilm = navFilms.find(f => f.id === activeFilmId) || navFilms.find(f => f.id === 'my-project-x') || navFilms[0];
+  const activeFilm = navFilms.find(f => f.id === activeFilmId) || navFilms[0];
+
+  if (!filmsLoaded) {
+    return (
+      <div className="fixed top-0 left-0 z-[100] px-6 py-6 md:px-10 mix-blend-difference select-none pointer-events-none">
+        <Link href="/" className="pointer-events-auto text-white flex flex-col justify-center" aria-label="Home">
+          <img src="/logo.png" alt="Elephant Film Production" style={{ height: 'clamp(80px, 10vw, 140px)', width: 'auto', objectFit: 'contain' }} />
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -193,7 +210,7 @@ export default function Navbar() {
                             <span className="font-mono text-[8px] font-bold tracking-[0.15em] text-black/70 uppercase truncate px-1">{activeFilm.year}</span>
                           </div>
                           <div className="flex-1 flex items-center justify-center">
-                            <span className="font-mono text-[8px] font-bold tracking-[0.15em] text-black/70 uppercase truncate px-1">MIN.{activeFilm.duration}</span>
+                            <span className="font-mono text-[8px] font-bold tracking-[0.15em] text-black/70 uppercase truncate px-1">—</span>
                           </div>
                         </div>
                       </div>
@@ -243,11 +260,7 @@ export default function Navbar() {
                         >
                           {/* Main nav links */}
                           <div className="px-6 pt-8 pb-4 flex flex-col gap-1">
-                            {[
-                              { num: '01', href: '/work', label: 'WORK' },
-                              { num: '02', href: '/about', label: 'ABOUT' },
-                              { num: '03', href: '/contact', label: 'CONTACT' },
-                            ].map((item) => {
+                            {navLinks.map((item) => {
                               const isActive = pathname === item.href;
                               return (
                                 <div key={item.href} className="flex items-baseline gap-3">
@@ -271,9 +284,9 @@ export default function Navbar() {
 
                           {/* Secondary links */}
                           <div className="px-6 py-4 flex justify-start gap-8 text-[10px] font-mono font-bold text-black/60 tracking-[0.15em]">
-                            <Link href="/cookies" onClick={closeAll} className="hover:text-black transition-colors">COOKIE</Link>
-                            <Link href="/terms" onClick={closeAll} className="hover:text-black transition-colors">TERMS</Link>
-                            <Link href="/privacy" onClick={closeAll} className="hover:text-black transition-colors">PRIVACY</Link>
+                            {legalLinks.map((item) => (
+                              <Link key={item.href} href={item.href} onClick={closeAll} className="hover:text-black transition-colors">{item.label}</Link>
+                            ))}
                           </div>
 
                           {/* Dashed separator */}
@@ -281,15 +294,24 @@ export default function Navbar() {
 
                           {/* Social icons */}
                           <div className="px-6 py-5 flex gap-6 items-center">
-                            <a href="https://www.instagram.com/sienafilmfoundation/" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                            </a>
-                            <a href="https://www.facebook.com/profile.php?id=61572313858308" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            </a>
-                            <a href="https://www.linkedin.com/company/elephant-productions-film-foundation" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm15.11 13.02h-3.56v-5.6c0-1.34-.03-3.05-1.86-3.05-1.86 0-2.14 1.45-2.14 2.95v5.7H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.86 3.39-1.86 3.63 0 4.3 2.39 4.3 5.5v6.25z"/></svg>
-                            </a>
+                            {socialLinks.map((social) => {
+                              const isIG = social.label === 'IG';
+                              const isFB = social.label === 'FB';
+                              const isLN = social.label === 'LN';
+                              return (
+                                <a key={social.label} href={social.url} target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
+                                  {isIG && (
+                                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                  )}
+                                  {isFB && (
+                                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                  )}
+                                  {isLN && (
+                                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm15.11 13.02h-3.56v-5.6c0-1.34-.03-3.05-1.86-3.05-1.86 0-2.14 1.45-2.14 2.95v5.7H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.86 3.39-1.86 3.63 0 4.3 2.39 4.3 5.5v6.25z"/></svg>
+                                  )}
+                                </a>
+                              );
+                            })}
                           </div>
 
                           {/* Dashed separator */}
@@ -318,11 +340,7 @@ export default function Navbar() {
                         <div className="absolute top-0 bottom-0 pointer-events-none z-10" style={{ left: PERF_X, borderLeft: '1.5px dashed rgba(0,0,0,0.25)' }} />
                         <div className="relative z-20 px-6 pt-8 pb-6 flex flex-col gap-5">
                           <div className="flex flex-col gap-2">
-                            {[
-                              { num: '01', href: '/work', label: 'WORK' },
-                              { num: '02', href: '/about', label: 'ABOUT' },
-                              { num: '03', href: '/contact', label: 'CONTACT' },
-                            ].map((item) => {
+                            {navLinks.map((item) => {
                               const isActive = pathname === item.href;
                               return (
                                 <div key={item.href} className="flex items-baseline gap-3">
@@ -336,21 +354,30 @@ export default function Navbar() {
                           </div>
                           <div style={{ borderTop: '1.5px dashed rgba(0,0,0,0.2)' }} />
                           <div className="flex justify-start gap-6 text-[10px] font-mono font-bold text-black/60 tracking-[0.15em]">
-                            <Link href="/cookies" onClick={closeAll} className="hover:text-black transition-colors">COOKIE</Link>
-                            <Link href="/terms" onClick={closeAll} className="hover:text-black transition-colors">TERMS</Link>
-                            <Link href="/privacy" onClick={closeAll} className="hover:text-black transition-colors">PRIVACY</Link>
+                            {legalLinks.map((item) => (
+                              <Link key={item.href} href={item.href} onClick={closeAll} className="hover:text-black transition-colors">{item.label}</Link>
+                            ))}
                           </div>
                           <div style={{ borderTop: '1.5px dashed rgba(0,0,0,0.2)' }} />
                           <div className="flex gap-5 items-center">
-                            <a href="https://www.instagram.com/sienafilmfoundation/" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                            </a>
-                            <a href="https://www.facebook.com/profile.php?id=61572313858308" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            </a>
-                            <a href="https://www.linkedin.com/company/elephant-productions-film-foundation" target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
-                              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm15.11 13.02h-3.56v-5.6c0-1.34-.03-3.05-1.86-3.05-1.86 0-2.14 1.45-2.14 2.95v5.7H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.86 3.39-1.86 3.63 0 4.3 2.39 4.3 5.5v6.25z"/></svg>
-                            </a>
+                            {socialLinks.map((social) => {
+                              const isIG = social.label === 'IG';
+                              const isFB = social.label === 'FB';
+                              const isLN = social.label === 'LN';
+                              return (
+                                <a key={social.label} href={social.url} target="_blank" rel="noopener noreferrer" className="text-black hover:opacity-60 transition-opacity">
+                                  {isIG && (
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                  )}
+                                  {isFB && (
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                  )}
+                                  {isLN && (
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zm15.11 13.02h-3.56v-5.6c0-1.34-.03-3.05-1.86-3.05-1.86 0-2.14 1.45-2.14 2.95v5.7H9.33V9h3.42v1.56h.05c.48-.9 1.64-1.86 3.39-1.86 3.63 0 4.3 2.39 4.3 5.5v6.25z"/></svg>
+                                  )}
+                                </a>
+                              );
+                            })}
                           </div>
                           <div className="font-mono text-[9px] text-black/50 font-bold uppercase tracking-[0.15em]">
                             ©{new Date().getFullYear()}. ELEPHANT PRODUCTIONS.

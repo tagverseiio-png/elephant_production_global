@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { footerSitemap, footerTags, socialLinks, legalLinks, emails } from '@/data/contact';
 
 export default function Footer() {
   const [subscribed, setSubscribed] = useState(false);
@@ -23,7 +24,7 @@ export default function Footer() {
         />
         
         <div className="flex flex-wrap justify-center gap-6 md:gap-12">
-          {['PRODUCTION', 'DOCUMENTARY', 'FILM & TV'].map((item) => (
+          {footerTags.map((item) => (
             <span key={item} className="font-mono text-[9px] font-bold tracking-widest text-elephant-ivory/80">
               {"//"} {item}
             </span>
@@ -74,12 +75,7 @@ export default function Footer() {
             SITEMAP
           </h4>
           <ul className="space-y-2">
-            {[
-              { href: '/', label: 'Home' },
-              { href: '/work', label: 'Work' },
-              { href: '/about', label: 'About' },
-              { href: '/contact', label: 'Contact' }
-            ].map((item) => (
+            {footerSitemap.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -99,18 +95,14 @@ export default function Footer() {
             CONTACT US
           </h4>
           <div className="space-y-3">
-            <div>
-              <span className="font-mono text-[8px] text-elephant-ivory/50 block">Inquiries</span>
-              <a href="mailto:lee@elephantproductions.com?subject=Website%20Inquiry" className="font-sans text-xs font-semibold text-elephant-ivory hover:text-elephant-red underline" data-cursor="hover">
-                LEE@ELEPHANTPRODUCTION.COM
-              </a>
-            </div>
-            <div>
-              <span className="font-mono text-[8px] text-elephant-ivory/50 block">Press</span>
-              <a href="mailto:press@elephantproductions.com?subject=Press%20Inquiry" className="font-sans text-xs font-semibold text-elephant-ivory hover:text-elephant-red underline" data-cursor="hover">
-                PRESS@ELEPHANTPRODUCTION.COM
-              </a>
-            </div>
+            {emails.map((email) => (
+              <div key={email.label}>
+                <span className="font-mono text-[8px] text-elephant-ivory/50 block">{email.label}</span>
+                <a href={`mailto:${email.address}?subject=Website%20Inquiry`} className="font-sans text-xs font-semibold text-elephant-ivory hover:text-elephant-red underline" data-cursor="hover">
+                  {email.address.toUpperCase()}
+                </a>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -120,20 +112,21 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row items-center justify-between border-t border-elephant-ivory/10 pt-8 text-[10px] font-mono text-elephant-ivory/40 gap-6 md:gap-4 text-center md:text-left">
         <div className="flex gap-4">
           <span className="text-elephant-ivory/50">Follow us:</span>
-          <a href="https://www.facebook.com/profile.php?id=61572313858308" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on Facebook">FB</a>
-          <a href="https://www.linkedin.com/company/elephant-productions-film-foundation" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on LinkedIn">LN</a>
-          <a href="https://www.instagram.com/sienafilmfoundation/" target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label="Follow us on Instagram">IG</a>
+          {socialLinks.map((social) => (
+            <a key={social.label} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:text-elephant-ivory" data-cursor="hover" aria-label={`Follow us on ${social.label}`}>{social.label}</a>
+          ))}
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3">
           <span>© {new Date().getFullYear()} Elephant. All Rights Reserved.</span>
           <span className="hidden md:inline">•</span>
           <div className="flex items-center justify-center gap-2">
-            <Link href="/cookies" className="hover:text-elephant-ivory" data-cursor="hover">Cookie</Link>
-            <span>•</span>
-            <Link href="/privacy" className="hover:text-elephant-ivory" data-cursor="hover">Privacy</Link>
-            <span>•</span>
-            <Link href="/terms" className="hover:text-elephant-ivory" data-cursor="hover">Terms</Link>
+            {legalLinks.map((item, idx) => (
+              <React.Fragment key={item.href}>
+                {idx > 0 && <span>•</span>}
+                <Link href={item.href} className="hover:text-elephant-ivory" data-cursor="hover">{item.label.charAt(0) + item.label.slice(1).toLowerCase()}</Link>
+              </React.Fragment>
+            ))}
           </div>
         </div>
       </div>

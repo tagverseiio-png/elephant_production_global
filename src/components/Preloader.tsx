@@ -17,29 +17,42 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     if (!showEnter) return;
 
+    let rafId = 0;
+    let lastProximity = -1;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (!buttonRef.current) return;
-      const rect = buttonRef.current.getBoundingClientRect();
-      const btnX = rect.left + rect.width / 2;
-      const btnY = rect.top + rect.height / 2;
-      const dx = e.clientX - btnX;
-      const dy = e.clientY - btnY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      
-      const maxDistance = 300;
-      const minDistance = 30;
-      if (distance > maxDistance) {
-        proximity.set(0);
-      } else if (distance < minDistance) {
-        proximity.set(1);
-      } else {
-        const factor = (maxDistance - distance) / (maxDistance - minDistance);
-        proximity.set(factor);
-      }
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        if (!buttonRef.current) return;
+        const rect = buttonRef.current.getBoundingClientRect();
+        const btnX = rect.left + rect.width / 2;
+        const btnY = rect.top + rect.height / 2;
+        const dx = e.clientX - btnX;
+        const dy = e.clientY - btnY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const maxDistance = 300;
+        const minDistance = 30;
+        let factor = 0;
+        if (distance <= maxDistance) {
+          factor = distance < minDistance
+            ? 1
+            : (maxDistance - distance) / (maxDistance - minDistance);
+        }
+
+        if (factor !== lastProximity) {
+          lastProximity = factor;
+          proximity.set(factor);
+        }
+      });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [showEnter, proximity]);
 
   const boxShadow = useTransform(proximity, (p) => {

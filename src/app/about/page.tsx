@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import DecryptedText from '@/components/DecryptedText';
-import { stillsGrid } from '@/data/stills';
-import { collaboratorsList } from '@/data/collaborators';
-
+import { publicApi, Collaborator, Film } from '@/lib/public-api';
+import { aboutDescription, aboutCategories, aboutTaglines, whyUs, services } from '@/data/contact';
+import { useScrollProgress } from '@/components/ScrollContext';
 export default function AboutPage() {
   const [isLive, setIsLive] = useState(false);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [films, setFilms] = useState<Film[]>([]);
+  const [collabLoading, setCollabLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -19,30 +22,36 @@ export default function AboutPage() {
         setIsLive(true);
       }
     }
+    Promise.all([
+      publicApi.collaborators.list(),
+      publicApi.films.list(),
+    ]).then(([collabs, filmData]) => {
+      setCollaborators(collabs);
+      setFilms(filmData);
+    }).catch(console.error)
+    .finally(() => setCollabLoading(false));
   }, []);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollRef,
-    offset: ["start end", "end start"]
-  });
+  const galleryImages = films.flatMap(f => f.gallery_images?.length ? f.gallery_images : (f.stillImage ? [f.stillImage] : []));
+
+  const scrollProgress = useScrollProgress();
 
   // Parallax translation mapping values for staircase text lines (Desktop percentages)
-  const xLine1 = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const xLine2 = useTransform(scrollYProgress, [0, 1], ["10%", "50%"]);
-  const xLine3 = useTransform(scrollYProgress, [0, 1], ["5%", "40%"]);
-  const xLine4 = useTransform(scrollYProgress, [0, 1], ["15%", "50%"]);
+  const xLine1 = useTransform(scrollProgress!, [0, 1], ["0%", "30%"]);
+  const xLine2 = useTransform(scrollProgress!, [0, 1], ["10%", "50%"]);
+  const xLine3 = useTransform(scrollProgress!, [0, 1], ["5%", "40%"]);
+  const xLine4 = useTransform(scrollProgress!, [0, 1], ["15%", "50%"]);
 
   // Parallax translation mapping values for text categories to prevent collisions
-  const xTelevision = useTransform(scrollYProgress, [0, 1], ["0%", "-5%"]);
-  const xFilms = useTransform(scrollYProgress, [0, 1], ["0%", "5%"]);
-  const xDocumentary = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
+  const xTelevision = useTransform(scrollProgress!, [0, 1], ["0%", "-5%"]);
+  const xFilms = useTransform(scrollProgress!, [0, 1], ["0%", "5%"]);
+  const xDocumentary = useTransform(scrollProgress!, [0, 1], ["0%", "8%"]);
 
   // Parallax translation mapping values for bottom ELEPHANT block and staircase
-  const xElephant = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
-  const xAna = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
-  const xFreud = useTransform(scrollYProgress, [0, 1], ["5%", "15%"]);
-  const xKafka = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
+  const xElephant = useTransform(scrollProgress!, [0, 1], ["-5%", "5%"]);
+  const xAna = useTransform(scrollProgress!, [0, 1], ["0%", "10%"]);
+  const xFreud = useTransform(scrollProgress!, [0, 1], ["5%", "15%"]);
+  const xKafka = useTransform(scrollProgress!, [0, 1], ["-5%", "5%"]);
 
   return (
     <div className="min-h-screen bg-[#000000] text-elephant-ivory select-none">
@@ -147,13 +156,11 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.8 }}
             >
-              <motion.div
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-elephant-ivory/20 bg-[#000000] text-elephant-ivory shadow-lg cursor-pointer"
-                animate={{ y: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-elephant-ivory/20 bg-[#000000] text-elephant-ivory shadow-lg cursor-pointer animate-bounce-soft"
               >
                 ↓
-              </motion.div>
+              </div>
             </motion.div>
           </div>
 
@@ -184,61 +191,33 @@ export default function AboutPage() {
       </section>
 
       {/* Typography Section (Screenshots 1 & 2) */}
-      <section ref={scrollRef} className="about-type-comp border-t border-elephant-ivory/10">
+      <section className="about-type-comp border-t border-elephant-ivory/10">
         
         {/* Top Staircase Film Titles (Screenshot 1) */}
         <div className="about-struct-tx px-6 md:px-12 max-w-7xl mx-auto w-full">
-          <motion.div 
-            className="about-title-tx-1"
-            style={{ x: xLine1 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            PRE-WEDDINGS
-          </motion.div>
-          <motion.div 
-            className="about-title-tx-2"
-            style={{ x: xLine2 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          >
-            WEDDINGS
-          </motion.div>
-          <motion.div 
-            className="about-title-tx-3"
-            style={{ x: xLine3 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          >
-            CORPORATE
-          </motion.div>
-          <motion.div 
-            className="about-title-tx-4"
-            style={{ x: xLine4 }}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-          >
-            EVENTS
-          </motion.div>
+          {aboutCategories.staircase.map((cat, idx) => {
+            const xStyles = [xLine1, xLine2, xLine3, xLine4];
+            const classNames = ['about-title-tx-1', 'about-title-tx-2', 'about-title-tx-3', 'about-title-tx-4'];
+            return (
+              <motion.div
+                key={cat}
+                className={classNames[idx]}
+                style={{ x: xStyles[idx] }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
+              >
+                {cat}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Small text description lines (Screenshot 1 center/right) */}
         <div className="about-sm-text">
           <div className="about-small-text-wrap space-y-2">
-            {[
-              ["Elephant Productions is a creative film production house ", "dedicated to transforming stories ", "into timeless visual experiences."],
-              ["From intimate celebrations to large-scale productions, ", "we believe every frame should evoke emotion, ", "preserve memories, and leave a lasting impact."],
-              ["With our head office in Singapore and creative teams ", "operating in Chennai and Karaikudi, ", "we proudly serve clients across Singapore and India,"],
-              ["delivering world-class photography, cinematography, ", "and visual storytelling. ", ""]
-            ].map((line, idx) => (
+            {aboutDescription.map((line, idx) => (
               <motion.div 
                 key={idx}
                 className="about-small-text-line"
@@ -266,7 +245,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
               >
-                PREWEDDING
+                {aboutCategories.middle[0]}
               </motion.div>
               <motion.div
                 style={{ x: xFilms }}
@@ -275,7 +254,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
               >
-                PORTFOLIO
+                {aboutCategories.middle[1]}
               </motion.div>
             </div>
             
@@ -294,7 +273,7 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
               >
-                CEREMONIES
+                {aboutCategories.middle[2]}
               </motion.div>
             </div>
           </div>
@@ -320,36 +299,23 @@ export default function AboutPage() {
           <div className="w-full flex flex-col lg:flex-row justify-between items-center lg:items-start gap-12 lg:pl-12">
             {/* Film list */}
             <div className="about-struct-tx items-center lg:items-start">
-              <motion.div 
-                className="about-title-tx-1"
-                style={{ x: xAna }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              >
-                MATERNITY
-              </motion.div>
-              <motion.div 
-                className="about-title-tx-6"
-                style={{ x: xFreud }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-              >
-                FAMILY
-              </motion.div>
-              <motion.div 
-                className="about-title-tx-5"
-                style={{ x: xKafka }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-              >
-                LIFESTYLE
-              </motion.div>
+              {aboutCategories.bottom.map((cat, idx) => {
+                const xStyles = [xAna, xFreud, xKafka];
+                const classNames = ['about-title-tx-1', 'about-title-tx-6', 'about-title-tx-5'];
+                return (
+                  <motion.div
+                    key={cat}
+                    className={classNames[idx]}
+                    style={{ x: xStyles[idx] }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 + idx * 0.1 }}
+                  >
+                    {cat}
+                  </motion.div>
+                );
+              })}
             </div>
 
             {/* Small coordinate block */}
@@ -360,10 +326,9 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
             >
-              <div>ELEPHANT PRODUCTIONS</div>
-              <div>CRAFTING STORIES. CREATING MEMORIES.</div>
-              <div>INSPIRING GENERATIONS.</div>
-              <div>EVERY PROJECT APPROACHED WITH CREATIVITY.</div>
+              {aboutTaglines.map((tag, i) => (
+                <div key={i}>{tag}</div>
+              ))}
             </motion.div>
           </div>
         </div>
@@ -409,14 +374,7 @@ export default function AboutPage() {
               </div>
               
               <ul className="space-y-4 font-sans text-sm md:text-base text-elephant-ivory/80 leading-relaxed list-none">
-                {[
-                  "Cinematic storytelling with a creative vision",
-                  "Professional photography and filmmaking team",
-                  "Premium editing and color grading",
-                  "Wedding, corporate, commercial, and event specialists",
-                  "Personalized experience for every client",
-                  "Trusted by clients across Singapore and India"
-                ].map((item, i) => (
+                {whyUs.map((item, i) => (
                   <motion.li 
                     key={i} 
                     className="flex items-start"
@@ -452,36 +410,7 @@ export default function AboutPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 font-sans text-sm md:text-base text-elephant-ivory/80 leading-relaxed w-full">
-                {[
-                  "Pre-Wedding Shoots",
-                  "Wedding Photography & Cinematography",
-                  "Engagement & Reception Coverage",
-                  "Traditional Ceremonies",
-                  "Corporate Photography & Films",
-                  "Brand Commercials & Advertisements",
-                  "Event Coverage",
-                  "Portfolio & Fashion Shoots",
-                  "Maternity Photography",
-                  "Baby Shower Photography",
-                  "Family Portraits",
-                  "Lifestyle Photography",
-                  "Birthday Celebrations",
-                  "Anniversary Shoots",
-                  "Gender Reveal Events",
-                  "Henna Night Coverage",
-                  "Church Weddings",
-                  "Muslim Weddings",
-                  "North Indian Weddings",
-                  "Punjabi Weddings",
-                  "Tamil Weddings",
-                  "ROM Ceremonies",
-                  "Puberty Ceremony",
-                  "Thalipadayal Ceremony",
-                  "Documentary Films",
-                  "Music Videos",
-                  "Short Films",
-                  "TV & Digital Content Production"
-                ].map((item, i) => (
+                {services.map((item, i) => (
                   <motion.div 
                     key={i} 
                     className="flex items-start"
@@ -519,7 +448,7 @@ export default function AboutPage() {
 
           {/* Collaborators Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {collaboratorsList.map((collab, idx) => (
+            {collaborators.map((collab, idx) => (
               <div 
                 key={idx}
                 className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-lg p-6 flex flex-col justify-between aspect-[4/3] text-center shadow-md relative group hover:border-elephant-red/40 transition-colors"
@@ -577,7 +506,7 @@ export default function AboutPage() {
                   transform: 'perspective(800px) rotateY(-5deg) rotateX(2deg)',
                 }}
               >
-                {stillsGrid.map((src, idx) => (
+                {(galleryImages.length > 0 ? galleryImages : films.map(f => f.stillImage).filter(Boolean)).slice(0, 18).map((src, idx) => (
                   <motion.div
                     key={idx}
                     className="coin-fill-container relative aspect-square bg-elephant-ivory/5 rounded-md overflow-hidden border border-elephant-ivory/10 shadow-md group"
