@@ -1,19 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import DecryptedText from '@/components/DecryptedText';
-import { publicApi, Collaborator, Film } from '@/lib/public-api';
-import { aboutDescription, aboutCategories, aboutTaglines, whyUs, services } from '@/data/contact';
-import { useScrollProgress } from '@/components/ScrollContext';
+import { publicApi, Film } from '@/lib/public-api';
+import { whyUs, services } from '@/data/contact';
 export default function AboutPage() {
   const [isLive, setIsLive] = useState(false);
-  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [films, setFilms] = useState<Film[]>([]);
-  const [collabLoading, setCollabLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -22,36 +19,15 @@ export default function AboutPage() {
         setIsLive(true);
       }
     }
-    Promise.all([
-      publicApi.collaborators.list(),
-      publicApi.films.list(),
-    ]).then(([collabs, filmData]) => {
-      setCollaborators(collabs);
-      setFilms(filmData);
-    }).catch(console.error)
-    .finally(() => setCollabLoading(false));
+    
+    publicApi.films.list()
+      .then((filmData) => {
+        setFilms(filmData);
+      })
+      .catch(console.error);
   }, []);
 
   const galleryImages = films.flatMap(f => f.gallery_images?.length ? f.gallery_images : (f.stillImage ? [f.stillImage] : []));
-
-  const scrollProgress = useScrollProgress();
-
-  // Parallax translation mapping values for staircase text lines (Desktop percentages)
-  const xLine1 = useTransform(scrollProgress!, [0, 1], ["0%", "30%"]);
-  const xLine2 = useTransform(scrollProgress!, [0, 1], ["10%", "50%"]);
-  const xLine3 = useTransform(scrollProgress!, [0, 1], ["5%", "40%"]);
-  const xLine4 = useTransform(scrollProgress!, [0, 1], ["15%", "50%"]);
-
-  // Parallax translation mapping values for text categories to prevent collisions
-  const xTelevision = useTransform(scrollProgress!, [0, 1], ["0%", "-5%"]);
-  const xFilms = useTransform(scrollProgress!, [0, 1], ["0%", "5%"]);
-  const xDocumentary = useTransform(scrollProgress!, [0, 1], ["0%", "8%"]);
-
-  // Parallax translation mapping values for bottom ELEPHANT block and staircase
-  const xElephant = useTransform(scrollProgress!, [0, 1], ["-5%", "5%"]);
-  const xAna = useTransform(scrollProgress!, [0, 1], ["0%", "10%"]);
-  const xFreud = useTransform(scrollProgress!, [0, 1], ["5%", "15%"]);
-  const xKafka = useTransform(scrollProgress!, [0, 1], ["-5%", "5%"]);
 
   return (
     <div className="min-h-screen bg-[#000000] text-elephant-ivory select-none">
@@ -67,7 +43,7 @@ export default function AboutPage() {
           transition={{ duration: 1.5, ease: [0.77, 0, 0.175, 1], delay: 0.1 }}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto w-full px-6 md:px-10">
           
           {/* Left Arch (3 cols) */}
           <motion.div
@@ -85,6 +61,7 @@ export default function AboutPage() {
                 src="/media/wedding1/DSC03084_websize.jpg"
                 alt="Arch scene left"
                 fill
+                priority
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover grayscale brightness-85 contrast-105"
                 style={{ clipPath: 'url(#gothicArch)' }}
@@ -93,7 +70,7 @@ export default function AboutPage() {
           </motion.div>
 
           {/* Lined Center Text block (6 cols) */}
-          <div className="col-span-1 lg:col-span-6 py-16 px-6 md:px-12 relative flex flex-col justify-between min-h-[460px]">
+          <div className="col-span-1 lg:col-span-6 py-16 px-6 md:px-10 relative flex flex-col justify-between min-h-[460px]">
             {/* Outer Surrounding Dotted/Dashed Border Box */}
             <motion.div
               className="absolute inset-0 border border-dashed border-elephant-ivory/20 rounded-2xl pointer-events-none"
@@ -180,6 +157,7 @@ export default function AboutPage() {
                 src="/media/wedding2/untitled-20_websize.jpg"
                 alt="Arch scene right"
                 fill
+                priority
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover grayscale brightness-85 contrast-105"
                 style={{ clipPath: 'url(#gothicArch)' }}
@@ -190,153 +168,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Typography Section (Screenshots 1 & 2) */}
-      <section className="about-type-comp border-t border-elephant-ivory/10">
-        
-        {/* Top Staircase Film Titles (Screenshot 1) */}
-        <div className="about-struct-tx px-6 md:px-12 max-w-7xl mx-auto w-full">
-          {aboutCategories.staircase.map((cat, idx) => {
-            const xStyles = [xLine1, xLine2, xLine3, xLine4];
-            const classNames = ['about-title-tx-1', 'about-title-tx-2', 'about-title-tx-3', 'about-title-tx-4'];
-            return (
-              <motion.div
-                key={cat}
-                className={classNames[idx]}
-                style={{ x: xStyles[idx] }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-              >
-                {cat}
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Small text description lines (Screenshot 1 center/right) */}
-        <div className="about-sm-text">
-          <div className="about-small-text-wrap space-y-2">
-            {aboutDescription.map((line, idx) => (
-              <motion.div 
-                key={idx}
-                className="about-small-text-line"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: idx * 0.15 }}
-              >
-                <span>{line[0]}</span>
-                <span>{line[1]}</span>
-                <span>{line[2]}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Major Category Blocks (Screenshot 2 Top) */}
-        <div className="about-md-text">
-          <div className="div-block-12">
-            <div className="div-block-11">
-              <motion.div
-                style={{ x: xTelevision }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-              >
-                {aboutCategories.middle[0]}
-              </motion.div>
-              <motion.div
-                style={{ x: xFilms }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-              >
-                {aboutCategories.middle[1]}
-              </motion.div>
-            </div>
-            
-            <div className="div-block-11 pl-0 md:pl-20">
-              <motion.div 
-                className="_5-line"
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, ease: [0.77, 0, 0.175, 1], delay: 0.2 }}
-              />
-              <motion.div
-                style={{ x: xDocumentary }}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-              >
-                {aboutCategories.middle[2]}
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
-        {/* Big ELEPHANT block with rightside film list & metadata (Screenshot 2 bottom) */}
-        <div className="px-6 md:px-12 max-w-7xl mx-auto w-full flex flex-col gap-12 items-center relative overflow-hidden">
-          {/* ELEPHANT Massive Logo text */}
-          <div className="w-full flex justify-center lg:justify-start">
-            <motion.h2 
-              className="text-block-9 select-none"
-              style={{ x: xElephant }}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            >
-              ELEPHANT
-            </motion.h2>
-          </div>
-
-          {/* Right side Film list and small coordinate structural text */}
-          <div className="w-full flex flex-col lg:flex-row justify-between items-center lg:items-start gap-12 lg:pl-12">
-            {/* Film list */}
-            <div className="about-struct-tx items-center lg:items-start">
-              {aboutCategories.bottom.map((cat, idx) => {
-                const xStyles = [xAna, xFreud, xKafka];
-                const classNames = ['about-title-tx-1', 'about-title-tx-6', 'about-title-tx-5'];
-                return (
-                  <motion.div
-                    key={cat}
-                    className={classNames[idx]}
-                    style={{ x: xStyles[idx] }}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 + idx * 0.1 }}
-                  >
-                    {cat}
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Small coordinate block */}
-            <motion.div 
-              className="about-small-struct text-center lg:text-left"
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
-            >
-              {aboutTaglines.map((tag, i) => (
-                <div key={i}>{tag}</div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* 3. Who We Are Section */}
-      <section className="py-20 px-6 md:px-12 border-t border-elephant-ivory/10 bg-[#000000]">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section className="py-20 px-6 md:px-10 border-t border-elephant-ivory/10 bg-[#000000]">
+        <div className="max-w-7xl mx-auto w-full space-y-12">
           
           {/* Ticket Section Header */}
           <div className="flex justify-center mb-10">
@@ -356,7 +190,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-12">
             
             {/* Why Choose Us */}
-            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-start shadow-md">
+            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-center text-center shadow-md">
               <div>
                 <motion.span 
                   className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
@@ -377,7 +211,7 @@ export default function AboutPage() {
                 {whyUs.map((item, i) => (
                   <motion.li 
                     key={i} 
-                    className="flex items-start"
+                    className="flex items-center justify-center text-center"
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
@@ -390,7 +224,7 @@ export default function AboutPage() {
             </div>
 
             {/* Our Services */}
-            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-start shadow-md">
+            <div className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-xl p-8 md:p-12 flex flex-col gap-6 items-center text-center shadow-md">
               <div>
                 <motion.span 
                   className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block"
@@ -413,7 +247,7 @@ export default function AboutPage() {
                 {services.map((item, i) => (
                   <motion.div 
                     key={i} 
-                    className="flex items-start"
+                    className="flex items-center justify-center text-center"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -429,60 +263,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* 4. Collaborations Section ("FESTIVAL RECOGNITION" - Missing Section Match) */}
-      <section className="py-20 px-6 md:px-12 border-t border-elephant-ivory/10 bg-elephant-black/25">
-        <div className="max-w-7xl mx-auto space-y-12">
-          
-          <div className="flex justify-center mb-10">
-            <motion.div 
-              className="bg-[#FAF7EF] text-[#000000] font-mono text-[9px] font-bold tracking-widest px-6 py-2 rounded shadow-sm uppercase"
-              style={{ clipPath: 'url(#ticketMaskLarge)' }}
-              initial={{ opacity: 0, scale: 0.9, y: 15 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-            >
-              FESTIVAL RECOGNITION
-            </motion.div>
-          </div>
-
-          {/* Collaborators Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {collaborators.map((collab, idx) => (
-              <div 
-                key={idx}
-                className="border border-dashed border-elephant-ivory/20 bg-[#000000] rounded-lg p-6 flex flex-col justify-between aspect-[4/3] text-center shadow-md relative group hover:border-elephant-red/40 transition-colors"
-              >
-                <motion.span 
-                  className="font-mono text-[8px] text-elephant-red uppercase tracking-widest block mb-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 0.8 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 }}
-                >
-                  {collab.type}
-                </motion.span>
-                
-                <h3 className="font-serif text-lg md:text-xl font-extrabold uppercase tracking-widest text-elephant-ivory py-4 border-y border-elephant-ivory/5 my-2 break-words hyphens-auto">
-                  <DecryptedText text={collab.name} delay={150 * idx} />
-                </h3>
-
-                <motion.span 
-                  className="font-mono text-[8px] text-elephant-ivory/30 uppercase tracking-widest block mt-2"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 0.3 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: idx * 0.1 + 0.2 }}
-                >
-                  OFFICIAL SELECTION
-                </motion.span>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
       {/* 6. Spherical Collage Grid Section (Image 5) */}
       <section className="relative w-full overflow-hidden bg-transparent border-t border-elephant-ivory/10">
         {isLive ? (
@@ -492,7 +272,7 @@ export default function AboutPage() {
         ) : (
           // Fallback stills grid for local development
           <div className="py-20 bg-[#000000]">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 mb-8">
+            <div className="max-w-7xl mx-auto w-full px-6 md:px-10 mb-8">
               <span className="font-mono text-[9px] font-bold tracking-widest text-elephant-red uppercase block">
                 COLLABORATIONS STiLLS (LOCAL DEV FALLBACK)
               </span>
@@ -542,7 +322,7 @@ export default function AboutPage() {
       <section className="relative w-full h-[65vh] overflow-hidden flex flex-col justify-center items-center text-center bg-elephant-black border-t border-elephant-ivory/10">
         <div className="absolute inset-0 opacity-40">
           <Image
-            src="/assets/6761a2bf91a62d459886fa28_cta-frame.avif"
+            src="/media/wedding2/untitled-14_websize.jpg"
             alt="CTA Frame Backdrop"
             fill
             sizes="100vw"

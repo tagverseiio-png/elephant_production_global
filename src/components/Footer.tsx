@@ -1,16 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { footerSitemap, footerTags, socialLinks, legalLinks, emails } from '@/data/contact';
 
 export default function Footer() {
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubscribed(true);
-  };
 
   return (
     <footer className="bg-elephant-black text-elephant-ivory px-6 md:px-12 py-16 mt-20 border-t border-elephant-ivory/10 select-none">
@@ -32,45 +26,11 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 2. Middle Footer: Newsletter and Sitemap grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+      {/* 2. Middle Footer: Sitemap and Contact grid */}
+      <div className="flex flex-col md:flex-row justify-between gap-12 mb-16">
         
-        {/* Newsletter subscription form (6 cols) */}
-        <div className="md:col-span-6 space-y-4">
-          <h3 className="font-serif text-xl italic text-elephant-ivory/90">
-            Stay up to date with our releases
-          </h3>
-          {subscribed ? (
-            <div className="flex items-center gap-3 border-b border-elephant-ivory/20 pb-2 max-w-md w-full">
-              {/* Checkmark icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-elephant-red shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-              <span className="font-mono text-[10px] font-bold tracking-widest text-elephant-ivory/70 uppercase">
-                You&apos;re subscribed. Thank you.
-              </span>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex max-w-md w-full gap-2 border-b border-elephant-ivory/20 pb-2">
-              <input
-                type="email"
-                placeholder="Your email address"
-                required
-                className="flex-1 bg-transparent px-2 py-1.5 font-sans text-xs text-elephant-ivory outline-none placeholder:text-elephant-ivory/30"
-              />
-              <button
-                type="submit"
-                className="font-mono text-[10px] font-bold tracking-widest text-elephant-red hover:text-elephant-ivory transition-colors"
-                data-cursor-text="SUBMIT"
-              >
-                SUBSCRIBE
-              </button>
-            </form>
-          )}
-        </div>
-
-        {/* Sitemap list (3 cols) */}
-        <div className="md:col-span-3 space-y-4">
+        {/* Sitemap list */}
+        <div className="flex-1 space-y-4">
           <h4 className="font-mono text-[9px] font-bold tracking-widest text-elephant-ivory/40 uppercase">
             SITEMAP
           </h4>
@@ -89,8 +49,8 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Contact links (3 cols) */}
-        <div className="md:col-span-3 space-y-4">
+        {/* Contact links */}
+        <div className="flex-1 md:text-right space-y-4">
           <h4 className="font-mono text-[9px] font-bold tracking-widest text-elephant-ivory/40 uppercase">
             CONTACT US
           </h4>

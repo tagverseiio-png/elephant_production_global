@@ -28,6 +28,11 @@ export interface Film {
   awards: { logo?: string; category?: string; title?: string }[];
   credits: { role: string; name: string }[];
   investors?: string;
+  projectOverview?: string;
+  coupleStory?: string;
+  eventLocation?: string;
+  eventDate?: string;
+  eventVenue?: string;
   order: number;
   published: boolean;
 }

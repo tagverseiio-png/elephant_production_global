@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import DecryptedText from '@/components/DecryptedText';
 import { SmartVideo } from '@/components/SmartVideo';
 import { publicApi, Film } from '@/lib/public-api';
+import Preloader from '@/components/Preloader';
 
 export default function WorkPage() {
   const [films, setFilms] = useState<Film[]>([]);
@@ -15,6 +16,7 @@ export default function WorkPage() {
   const [viewMode, setViewMode] = useState<'poster' | 'footage'>('footage');
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showPreloader, setShowPreloader] = useState(true);
 
   useEffect(() => {
     publicApi.films.list()
@@ -224,24 +226,35 @@ export default function WorkPage() {
   }, []);
 
   const progress = maxScroll !== 0 ? Math.min(Math.max(currentX.current / maxScroll, 0), 1) : 0;
-  const activeFilm = films[activeIndex];
 
-  if (loading) {
+  const activeFilm = films[activeIndex] || films[0];
+
+  if (loading || films.length === 0 || !activeFilm) {
     return (
-      <div className="bg-[#030303] h-screen w-full flex items-center justify-center">
-        <div className="text-white/50 font-mono text-[10px] tracking-widest">LOADING...</div>
-      </div>
+      <>
+        <AnimatePresence mode="wait">
+          {showPreloader && <Preloader onComplete={() => setShowPreloader(false)} />}
+        </AnimatePresence>
+        <div className="bg-[#030303] h-screen w-full flex items-center justify-center">
+          {/* Placeholder background while data loads, Preloader is above this */}
+        </div>
+      </>
     );
   }
 
   return (
-    <div
-      data-page="work"
-      className="pw h-screen work relative select-none"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      aria-label="Film gallery — use arrow keys to navigate"
-    >
+    <>
+      <AnimatePresence mode="wait">
+        {showPreloader && <Preloader onComplete={() => setShowPreloader(false)} />}
+      </AnimatePresence>
+
+      <div
+        data-page="work"
+        className="pw h-screen work relative select-none"
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        aria-label="Film gallery — use arrow keys to navigate"
+      >
 
       {/* Background grain noise texture */}
       <div
@@ -601,5 +614,6 @@ export default function WorkPage() {
       </div>
 
     </div>
+    </>
   );
 }

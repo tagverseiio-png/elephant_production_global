@@ -34,6 +34,11 @@ export interface IFilm extends Document {
   awards: IAward[];
   credits: ICredit[];
   investors?: string;
+  projectOverview?: string;
+  coupleStory?: string;
+  eventLocation?: string;
+  eventDate?: string;
+  eventVenue?: string;
   order: number;
   published: boolean;
 }
@@ -82,6 +87,11 @@ const filmSchema = new Schema<IFilm>(
     awards: { type: [awardSchema], default: [] },
     credits: { type: [creditSchema], default: [] },
     investors: { type: String },
+    projectOverview: { type: String },
+    coupleStory: { type: String },
+    eventLocation: { type: String },
+    eventDate: { type: String },
+    eventVenue: { type: String },
     order: { type: Number, default: 0 },
     published: { type: Boolean, default: true },
   },

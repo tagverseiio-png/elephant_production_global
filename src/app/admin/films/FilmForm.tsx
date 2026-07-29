@@ -24,6 +24,11 @@ interface FilmData {
   credits: { role: string; name: string }[];
   investors: string;
   gallery_images: string[];
+  projectOverview: string;
+  coupleStory: string;
+  eventLocation: string;
+  eventDate: string;
+  eventVenue: string;
   order: number;
   published: boolean;
 }
@@ -33,7 +38,10 @@ const emptyData: FilmData = {
   stillImage: '', hero_image: '', director_image: '', trailerVideo: '',
   awardYear: '', awardLaurel: '', awardLogo: '',
   reviews: [], awards: [], credits: [],
-  investors: '', gallery_images: [], order: 0, published: true,
+  investors: '', gallery_images: [], 
+  projectOverview: '', coupleStory: '', 
+  eventLocation: '', eventDate: '', eventVenue: '',
+  order: 0, published: true,
 };
 
 export default function FilmForm() {
@@ -105,7 +113,6 @@ export default function FilmForm() {
             <SelectField label="Category" value={form.category} onChange={v => update('category', v)} options={CATEGORIES} />
             <Field label="Year" value={form.year} onChange={v => update('year', v)} required />
           </div>
-          <Field label="Director" value={form.director} onChange={v => update('director', v)} required />
           <div className="grid grid-cols-2 gap-4">
             <Field label="Order" type="number" value={String(form.order)} onChange={v => update('order', Number(v))} />
             <div className="flex items-end pb-2">
@@ -122,10 +129,19 @@ export default function FilmForm() {
           </div>
         </Section>
 
+        <Section label="Details & Story">
+          <Field label="Project Overview (Short Description)" value={form.projectOverview} onChange={v => update('projectOverview', v)} />
+          <Field label="Couple Story" value={form.coupleStory} onChange={v => update('coupleStory', v)} />
+          <div className="grid grid-cols-3 gap-4">
+            <Field label="Event Location" value={form.eventLocation} onChange={v => update('eventLocation', v)} />
+            <Field label="Event Date" value={form.eventDate} onChange={v => update('eventDate', v)} />
+            <Field label="Event Venue" value={form.eventVenue} onChange={v => update('eventVenue', v)} />
+          </div>
+        </Section>
+
         <Section label="Media">
           <Field label="Still Image URL" value={form.stillImage} onChange={v => update('stillImage', v)} required />
           <Field label="Hero Image URL" value={form.hero_image} onChange={v => update('hero_image', v)} />
-          <Field label="Director Image URL" value={form.director_image} onChange={v => update('director_image', v)} />
           <Field label="Trailer Video URL" value={form.trailerVideo} onChange={v => update('trailerVideo', v)} />
           <ArrayField
             label="Gallery Images"

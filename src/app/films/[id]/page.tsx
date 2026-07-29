@@ -66,12 +66,11 @@ export default function FilmDetailPage() {
   const nextFilm = films[nextIdx];
 
   const heroImage = film.hero_image || film.stillImage;
-  const directorImage = film.director_image || heroImage;
   const trailerUrl = film.trailerVideo ?? '';
   const galleryStills = film.gallery_images?.length ? film.gallery_images : (film.stillImage ? [film.stillImage] : []);
   const reviewsList = film.reviews?.length ? film.reviews : [];
   const awardsList = film.awards?.length ? film.awards : [];
-  const crewList = film.credits?.length ? film.credits : [{ role: 'Director', name: film.director }];
+  const crewList = film.credits?.length ? film.credits.filter(c => c.role.toLowerCase() !== 'director') : [];
 
   const handleOpenTrailer = () => {
     setIsPlayingTrailer(true);
@@ -226,10 +225,6 @@ export default function FilmDetailPage() {
                   {/* Lined Metadata Table */}
                   <div className="border-t border-[#000000]/25 pt-4 space-y-2 text-[10px] font-mono max-w-sm">
                     <div className="flex justify-between py-1.5 border-b border-[#000000]/10">
-                      <span className="text-[#000000]/55">DIRECTOR</span>
-                      <span className="font-semibold uppercase">{film.director}</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-[#000000]/10">
                       <span className="text-[#000000]/55">YEAR</span>
                       <span className="font-semibold">{film.year}</span>
                     </div>
@@ -316,34 +311,82 @@ export default function FilmDetailPage() {
 
       </section>
 
+      {/* 1.5. Overview & Story Section */}
+      {(film.projectOverview || film.coupleStory || film.eventLocation || film.eventDate || film.eventVenue) && (
+        <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-[#000000]/10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            
+            {/* Left: Overview & Story (8 cols) */}
+            <div className="lg:col-span-8 space-y-12">
+              {film.projectOverview && (
+                <div className="space-y-4">
+                  <div className="border-b border-[#000000]/10 pb-4">
+                    <h4 className="font-mono text-[9px] font-bold tracking-widest text-[#000000]/40 uppercase">
+                      PROJECT OVERVIEW
+                    </h4>
+                  </div>
+                  <p className="font-serif text-lg leading-relaxed text-[#000000]/80">
+                    {film.projectOverview}
+                  </p>
+                </div>
+              )}
+
+              {film.coupleStory && (
+                <div className="space-y-4">
+                  <div className="border-b border-[#000000]/10 pb-4">
+                    <h4 className="font-mono text-[9px] font-bold tracking-widest text-[#000000]/40 uppercase">
+                      COUPLE STORY
+                    </h4>
+                  </div>
+                  <p className="font-serif text-lg leading-relaxed text-[#000000]/80 italic">
+                    {film.coupleStory}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Right: Event Details (4 cols) */}
+            {(film.eventLocation || film.eventDate || film.eventVenue) && (
+              <div className="lg:col-span-4 space-y-6 lg:pl-8">
+                <div className="border-b border-[#000000]/10 pb-4">
+                  <h4 className="font-mono text-[9px] font-bold tracking-widest text-[#000000]/40 uppercase">
+                    EVENT DETAILS
+                  </h4>
+                </div>
+                
+                <div className="space-y-6">
+                  {film.eventDate && (
+                    <div className="flex flex-col border-b border-[#000000]/5 pb-3">
+                      <span className="font-mono text-[8px] text-[#000000]/40 uppercase">DATE</span>
+                      <span className="font-sans text-sm font-semibold text-[#000000] mt-0.5 uppercase">{film.eventDate}</span>
+                    </div>
+                  )}
+                  {film.eventVenue && (
+                    <div className="flex flex-col border-b border-[#000000]/5 pb-3">
+                      <span className="font-mono text-[8px] text-[#000000]/40 uppercase">VENUE</span>
+                      <span className="font-sans text-sm font-semibold text-[#000000] mt-0.5 uppercase">{film.eventVenue}</span>
+                    </div>
+                  )}
+                  {film.eventLocation && (
+                    <div className="flex flex-col border-b border-[#000000]/5 pb-3">
+                      <span className="font-mono text-[8px] text-[#000000]/40 uppercase">LOCATION</span>
+                      <span className="font-sans text-sm font-semibold text-[#000000] mt-0.5 uppercase">{film.eventLocation}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+          </div>
+        </section>
+      )}
+
       {/* 2. Detailed Crew Table section */}
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-[#000000]/10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Left: Director Profile */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="relative aspect-[3/4.2] w-full max-w-[280px] rounded-t-full overflow-hidden border border-elephant-black/10 bg-elephant-black/5 shadow-md">
-              <Image
-                src={directorImage}
-                alt="Director Profile Still"
-                fill
-                sizes="(max-width: 768px) 100vw, 300px"
-                className="object-cover"
-              />
-            </div>
-            
-            <div className="space-y-1">
-              <span className="font-mono text-[8px] font-bold tracking-widest text-elephant-red uppercase block">
-                DIRECTED BY
-              </span>
-              <h3 className="font-serif text-2xl font-semibold text-elephant-black leading-tight uppercase">
-                {film.director}
-              </h3>
-            </div>
-          </div>
-
-          {/* Right: Main credits table */}
-          <div className="lg:col-span-8 space-y-6">
+          {/* Main credits table */}
+          <div className="lg:col-span-12 space-y-6">
             <div className="border-b border-[#000000]/10 pb-4">
               <h4 className="font-mono text-[9px] font-bold tracking-widest text-[#000000]/40 uppercase">
                 MAIN CREW & CREDITS
@@ -367,14 +410,14 @@ export default function FilmDetailPage() {
         </div>
       </section>
 
-      {/* 3. Director's Cut Gallery strip */}
+      {/* 3. Production Gallery strip */}
       <section className="py-16 border-t border-[#000000]/10">
         <div className="px-6 md:px-12 mb-6 max-w-7xl mx-auto">
           <span className="font-mono text-[9px] font-bold tracking-widest text-elephant-red uppercase block">
             STILL CATALOGUE
           </span>
           <h2 className="font-serif text-3xl font-semibold tracking-wide text-[#000000] mt-1 uppercase">
-            Director&apos;s Cut Gallery
+            Production Gallery
           </h2>
         </div>
 

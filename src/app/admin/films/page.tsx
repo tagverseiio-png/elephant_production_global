@@ -103,7 +103,6 @@ export default function AdminFilmsList() {
                   <div className="flex gap-3 mt-1">
                     <span className="text-[10px] tracking-wider uppercase text-white/30">{film.category}</span>
                     <span className="text-[10px] tracking-wider uppercase text-white/30">{film.year}</span>
-                    <span className="text-[10px] tracking-wider uppercase text-white/30 truncate">{film.director}</span>
                   </div>
                 </div>
               </div>
