@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import compression from 'compression';
 
 import authRoutes from './routes/auth';
 import filmRoutes from './routes/films';
@@ -14,6 +15,8 @@ import path from 'path';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+app.use(compression()); // Gzip compression for faster API responses
+
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -23,7 +26,17 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/media', express.static(path.join(process.cwd(), 'uploads', 'media')));
+// Global Cache-Control for public GET requests to improve performance
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api/admin')) {
+    res.setHeader('Cache-Control', 'public, max-age=60');
+  }
+  next();
+});
+
+app.use('/api/media', express.static(path.join(process.cwd(), 'uploads', 'media'), {
+  maxAge: '1y' // Aggressive caching for static media files
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/films', filmRoutes);
