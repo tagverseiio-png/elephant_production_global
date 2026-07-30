@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, ChangeEvent } from 'react';
 import { Image as ImageIcon, X, GripVertical } from 'lucide-react';
 

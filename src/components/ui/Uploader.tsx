@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, ChangeEvent } from 'react';
 import { UploadCloud, X, Film, Image as ImageIcon } from 'lucide-react';
 
