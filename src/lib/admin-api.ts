@@ -40,6 +40,8 @@ export const api = {
       request<Record<string, unknown>>(`/films/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => request<{ message: string }>(`/films/${id}`, { method: 'DELETE' }),
     toggle: (id: string) => request<{ id: string; published: boolean }>(`/films/${id}/toggle`, { method: 'PATCH' }),
+    reorder: (items: { id: string; order: number }[]) => 
+      request<{ message: string }>('/films/reorder', { method: 'PATCH', body: JSON.stringify(items) }),
   },
   collaborators: {
     list: () => request<Array<Record<string, unknown>>>('/collaborators'),
@@ -48,6 +50,8 @@ export const api = {
     update: (id: string, data: Record<string, unknown>) =>
       request<Record<string, unknown>>(`/collaborators/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => request<{ message: string }>(`/collaborators/${id}`, { method: 'DELETE' }),
+    reorder: (items: { _id: string; order: number }[]) =>
+      request<{ message: string }>('/collaborators/reorder', { method: 'PATCH', body: JSON.stringify(items) }),
   },
   settings: {
     get: () => request<Record<string, unknown>>('/settings'),

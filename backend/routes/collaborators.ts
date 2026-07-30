@@ -51,4 +51,29 @@ router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
+router.patch('/reorder', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const items = req.body as { _id: string; order: number }[];
+    if (!Array.isArray(items)) {
+      res.status(400).json({ error: 'Invalid payload' });
+      return;
+    }
+
+    const bulkOps = items.map((item) => ({
+      updateOne: {
+        filter: { _id: item._id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    if (bulkOps.length > 0) {
+      await Collaborator.bulkWrite(bulkOps);
+    }
+    
+    res.json({ message: 'Collaborators reordered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Server error' });
+  }
+});
+
 export default router;

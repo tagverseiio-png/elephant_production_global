@@ -101,4 +101,29 @@ router.patch('/:id/toggle', authMiddleware, async (req: Request, res: Response) 
   }
 });
 
+router.patch('/reorder', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const items = req.body as { id: string; order: number }[];
+    if (!Array.isArray(items)) {
+      res.status(400).json({ error: 'Invalid payload' });
+      return;
+    }
+
+    const bulkOps = items.map((item) => ({
+      updateOne: {
+        filter: { id: item.id },
+        update: { $set: { order: item.order } },
+      },
+    }));
+
+    if (bulkOps.length > 0) {
+      await Film.bulkWrite(bulkOps);
+    }
+    
+    res.json({ message: 'Films reordered successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Server error' });
+  }
+});
+
 export default router;

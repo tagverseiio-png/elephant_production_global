@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/admin-api';
-import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { Reorder } from 'framer-motion';
 
 interface Film {
   _id: string;
@@ -67,6 +68,26 @@ export default function AdminFilmsList() {
     }
   };
 
+  const handleReorder = async (newOrder: Film[]) => {
+    // We only want to reorder if we're not filtering, to avoid breaking sequence.
+    // If filtering is on, disable drag and drop or handle gracefully.
+    // Let's just allow it for simplicity but usually order is global.
+    const reorderedFilms = newOrder.map((film, index) => ({
+      ...film,
+      order: index + 1, // Optional: adjust this depending on if you want 0-indexed or 1-indexed
+    }));
+    
+    setFilms(reorderedFilms);
+    
+    try {
+      const payload = reorderedFilms.map(f => ({ id: f.id, order: f.order }));
+      await api.films.reorder(payload);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save order.');
+    }
+  };
+
   const categories = [...new Set(films.map(f => f.category))];
 
   return (
@@ -109,13 +130,17 @@ export default function AdminFilmsList() {
       ) : films.length === 0 ? (
         <div className="text-white/30 text-xs tracking-widest uppercase">No films found.</div>
       ) : (
-        <div className="space-y-2">
+        <Reorder.Group axis="y" values={films} onReorder={handleReorder} className="space-y-2">
           {films.map((film) => (
-            <div
+            <Reorder.Item
               key={film._id}
+              value={film}
               className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-5 py-4 group"
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
+                <div className="cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60">
+                  <GripVertical size={16} />
+                </div>
                 <span className="text-xs text-white/30 w-6 text-right">{film.order}</span>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm truncate">{film.title}</div>
@@ -146,9 +171,9 @@ export default function AdminFilmsList() {
                   <Trash2 size={14} />
                 </button>
               </div>
-            </div>
+            </Reorder.Item>
           ))}
-        </div>
+        </Reorder.Group>
       )}
     </div>
   );

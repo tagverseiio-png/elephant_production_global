@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/admin-api';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, GripVertical } from 'lucide-react';
+import { Reorder } from 'framer-motion';
 
 interface Collaborator {
   _id: string;
@@ -48,6 +49,23 @@ export default function AdminCollaboratorsList() {
     }
   };
 
+  const handleReorder = async (newOrder: Collaborator[]) => {
+    const reorderedItems = newOrder.map((item, index) => ({
+      ...item,
+      order: index + 1,
+    }));
+    
+    setItems(reorderedItems);
+    
+    try {
+      const payload = reorderedItems.map(c => ({ _id: c._id, order: c.order }));
+      await api.collaborators.reorder(payload);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save order.');
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -66,13 +84,17 @@ export default function AdminCollaboratorsList() {
       ) : items.length === 0 ? (
         <div className="text-white/30 text-xs tracking-widest uppercase">No collaborators found.</div>
       ) : (
-        <div className="space-y-2">
+        <Reorder.Group axis="y" values={items} onReorder={handleReorder} className="space-y-2">
           {items.map((item) => (
-            <div
+            <Reorder.Item
               key={item._id}
+              value={item}
               className="flex items-center justify-between bg-white/5 border border-white/10 rounded-lg px-5 py-4 group"
             >
               <div className="flex items-center gap-4 flex-1 min-w-0">
+                <div className="cursor-grab active:cursor-grabbing text-white/30 hover:text-white/60">
+                  <GripVertical size={16} />
+                </div>
                 <span className="text-xs text-white/30 w-6 text-right">{item.order}</span>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm truncate">{item.name}</div>
@@ -93,9 +115,9 @@ export default function AdminCollaboratorsList() {
                   <Trash2 size={14} />
                 </button>
               </div>
-            </div>
+            </Reorder.Item>
           ))}
-        </div>
+        </Reorder.Group>
       )}
     </div>
   );
