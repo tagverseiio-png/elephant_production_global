@@ -33,8 +33,19 @@ export default function AdminCollaboratorsList() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this collaborator?')) return;
-    await api.collaborators.delete(id);
-    load();
+    
+    // Optimistic update
+    const previousItems = [...items];
+    setItems(items.filter(item => item._id !== id));
+    
+    try {
+      await api.collaborators.delete(id);
+    } catch (err) {
+      console.error(err);
+      // Rollback on failure
+      setItems(previousItems);
+      alert('Failed to delete collaborator.');
+    }
   };
 
   return (

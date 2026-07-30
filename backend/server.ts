@@ -10,6 +10,7 @@ import authRoutes from './routes/auth';
 import filmRoutes from './routes/films';
 import collaboratorRoutes from './routes/collaborators';
 import settingsRoutes from './routes/settings';
+import uploadRoutes from './routes/upload';
 import path from 'path';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/films', filmRoutes);
 app.use('/api/collaborators', collaboratorRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Elephant Production API is running' });

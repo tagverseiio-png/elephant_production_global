@@ -38,14 +38,33 @@ export default function AdminFilmsList() {
   useEffect(() => { loadFilms(); }, [categoryFilter]);
 
   const handleToggle = async (id: string) => {
-    await api.films.toggle(id);
-    loadFilms();
+    // Optimistic update
+    const previousFilms = [...films];
+    setFilms(films.map(film => film.id === id ? { ...film, published: !film.published } : film));
+    
+    try {
+      await api.films.toggle(id);
+    } catch (err) {
+      console.error(err);
+      setFilms(previousFilms);
+      alert('Failed to toggle film status.');
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this film?')) return;
-    await api.films.delete(id);
-    loadFilms();
+    
+    // Optimistic update
+    const previousFilms = [...films];
+    setFilms(films.filter(film => film.id !== id));
+    
+    try {
+      await api.films.delete(id);
+    } catch (err) {
+      console.error(err);
+      setFilms(previousFilms);
+      alert('Failed to delete film.');
+    }
   };
 
   const categories = [...new Set(films.map(f => f.category))];

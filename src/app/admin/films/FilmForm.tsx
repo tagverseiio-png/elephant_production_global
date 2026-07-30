@@ -3,6 +3,9 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/admin-api';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { Uploader } from '@/components/ui/Uploader';
+import { GalleryUploader } from '@/components/ui/GalleryUploader';
 
 const CATEGORIES = ['Documentary', 'Feature Film', 'Short Film', 'Wedding', 'Home'];
 
@@ -134,20 +137,39 @@ export default function FilmForm() {
           <Field label="Couple Story" value={form.coupleStory} onChange={v => update('coupleStory', v)} />
           <div className="grid grid-cols-3 gap-4">
             <Field label="Event Location" value={form.eventLocation} onChange={v => update('eventLocation', v)} />
-            <Field label="Event Date" value={form.eventDate} onChange={v => update('eventDate', v)} />
+            <DatePicker label="Event Date" value={form.eventDate} onChange={v => update('eventDate', v)} />
             <Field label="Event Venue" value={form.eventVenue} onChange={v => update('eventVenue', v)} />
           </div>
         </Section>
 
         <Section label="Media">
-          <Field label="Still Image URL" value={form.stillImage} onChange={v => update('stillImage', v)} required />
-          <Field label="Hero Image URL" value={form.hero_image} onChange={v => update('hero_image', v)} />
-          <Field label="Trailer Video URL" value={form.trailerVideo} onChange={v => update('trailerVideo', v)} />
-          <ArrayField
+          <Uploader 
+            label="Still Image" 
+            value={form.stillImage} 
+            onChange={v => update('stillImage', v)} 
+            type="image" 
+            accept=".jpg,.jpeg,.png,.webp,.svg" 
+            required 
+          />
+          <Uploader 
+            label="Hero Image" 
+            value={form.hero_image} 
+            onChange={v => update('hero_image', v)} 
+            type="image" 
+            accept=".jpg,.jpeg,.png,.webp" 
+          />
+          <Uploader 
+            label="Trailer Video" 
+            value={form.trailerVideo} 
+            onChange={v => update('trailerVideo', v)} 
+            type="video" 
+            accept=".mp4,.mov,.webm" 
+          />
+          <GalleryUploader
             label="Gallery Images"
             items={form.gallery_images}
             onChange={v => update('gallery_images', v)}
-            placeholder="Image URL"
+            maxFiles={20}
           />
         </Section>
 
