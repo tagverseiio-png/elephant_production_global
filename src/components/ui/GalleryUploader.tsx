@@ -36,9 +36,11 @@ export function GalleryUploader({ label, items, onChange, maxFiles = 20 }: Galle
       formData.append('files', files[i]);
     }
 
+    const uploadBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/upload/multiple`, true);
+      xhr.open('POST', `${uploadBase}/upload/multiple`, true);
       
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
