@@ -34,7 +34,7 @@ export function Uploader({ label, value, onChange, accept, type, required }: Upl
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/upload', true);
+      xhr.open('POST', `${process.env.NEXT_PUBLIC_API_URL}/upload`, true);
       
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {

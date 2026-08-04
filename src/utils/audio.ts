@@ -11,23 +11,34 @@ if (typeof window !== 'undefined') {
   hoverSound = new Howl({
     src: ['https://www.soundjay.com/buttons/button-37.mp3'],
     volume: 0.35,
-    html5: true // load audio via HTML5 tags to avoid CORS block
+    html5: true, // load audio via HTML5 tags to avoid CORS block
+    pool: 1,     // cap to 1 HTML5 audio element — prevents pool exhaustion
   });
 
   clickSound = new Howl({
     src: ['https://www.soundjay.com/buttons/button-16.mp3'],
     volume: 0.45,
-    html5: true
+    html5: true,
+    pool: 1,
   });
 
   transitionSound = new Howl({
     src: ['https://www.soundjay.com/buttons/button-10.mp3'],
     volume: 0.35,
-    html5: true
+    html5: true,
+    pool: 1,
   });
 }
 
+// Debounce guard: prevent hover sound firing more than once per 100ms
+// (rapid mouse movement over the enter button floods the pool otherwise)
+let lastHoverTime = 0;
+
 export const playHover = () => {
+  const now = Date.now();
+  if (now - lastHoverTime < 100) return;
+  lastHoverTime = now;
+
   try {
     if (hoverSound) {
       if (hoverSound.state() === 'unloaded') hoverSound.load();
