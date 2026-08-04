@@ -1,91 +1,41 @@
 'use client';
 
-import { Howl } from 'howler';
+// Simple audio utility — intentionally does NOT use Howler.
+//
+// Howler's module initialiser creates a global AudioContext and pre-fills
+// the HTML5 audio pool the moment `import { Howl } from 'howler'` is
+// evaluated, which happens before any user gesture → browser blocks it and
+// logs "HTML5 Audio pool exhausted" / "AudioContext not allowed to start".
+//
+// Using plain HTMLAudioElement instead: audio objects are created inside the
+// play functions (always after a user gesture) and .play() errors are caught
+// silently, so no warnings ever appear in the console.
 
-// Howl instances are created lazily (on first play call) so that
-// no <audio> element is requested before a user gesture.
-// Creating Howl at module-evaluation time triggers _obtainHtml5Audio
-// before the browser allows audio, which exhausts the pool instantly.
-let hoverSound: Howl | null = null;
-let clickSound: Howl | null = null;
-let transitionSound: Howl | null = null;
-
-function getHoverSound(): Howl {
-  if (!hoverSound) {
-    hoverSound = new Howl({
-      src: ['https://www.soundjay.com/buttons/button-37.mp3'],
-      volume: 0.35,
-      html5: true,
-      preload: false, // don't grab an audio element until .play() is called
-      pool: 1,
+function playSound(src: string, volume: number) {
+  if (typeof window === 'undefined') return;
+  try {
+    const audio = new Audio(src);
+    audio.volume = volume;
+    audio.play().catch(() => {
+      // Autoplay policy blocked — swallow silently, sound is decorative
     });
+  } catch (_) {
+    // Ignore any other errors (e.g. unsupported format)
   }
-  return hoverSound;
 }
 
-function getClickSound(): Howl {
-  if (!clickSound) {
-    clickSound = new Howl({
-      src: ['https://www.soundjay.com/buttons/button-16.mp3'],
-      volume: 0.45,
-      html5: true,
-      preload: false,
-      pool: 1,
-    });
-  }
-  return clickSound;
-}
-
-function getTransitionSound(): Howl {
-  if (!transitionSound) {
-    transitionSound = new Howl({
-      src: ['https://www.soundjay.com/buttons/button-10.mp3'],
-      volume: 0.35,
-      html5: true,
-      preload: false,
-      pool: 1,
-    });
-  }
-  return transitionSound;
-}
-
-// Debounce guard: prevent hover sound firing more than once per 100ms
+// Debounce: prevent hover sound firing more than once per 100 ms
 let lastHoverTime = 0;
 
 export const playHover = () => {
-  if (typeof window === 'undefined') return;
   const now = Date.now();
   if (now - lastHoverTime < 100) return;
   lastHoverTime = now;
-
-  try {
-    const sound = getHoverSound();
-    sound.stop();
-    sound.play();
-  } catch (e) {
-    console.warn('Audio playback blocked:', e);
-  }
+  playSound('https://www.soundjay.com/buttons/button-37.mp3', 0.35);
 };
 
-export const playClick = () => {
-  if (typeof window === 'undefined') return;
-  try {
-    const sound = getClickSound();
-    sound.stop();
-    sound.play();
-  } catch (e) {
-    console.warn('Audio playback blocked:', e);
-  }
-};
+export const playClick = () =>
+  playSound('https://www.soundjay.com/buttons/button-16.mp3', 0.45);
 
-export const playTransition = () => {
-  if (typeof window === 'undefined') return;
-  try {
-    const sound = getTransitionSound();
-    sound.stop();
-    sound.play();
-  } catch (e) {
-    console.warn('Audio playback blocked:', e);
-  }
-};
-
+export const playTransition = () =>
+  playSound('https://www.soundjay.com/buttons/button-10.mp3', 0.35);

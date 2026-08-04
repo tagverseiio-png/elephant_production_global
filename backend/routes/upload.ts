@@ -41,8 +41,11 @@ router.post('/', upload.single('file'), (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
     
-    // Return the relative URL to access the uploaded file
-    const fileUrl = `/api/media/${req.file.filename}`;
+    // Return an absolute URL so the frontend (on a different domain) can
+    // resolve the file correctly. BASE_URL should be set to the public
+    // backend URL e.g. https://elephantproductionapi.t4gverse.com
+    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
+    const fileUrl = `${baseUrl}/api/media/${req.file.filename}`;
     return res.status(200).json({ url: fileUrl });
   } catch (error) {
     console.error('Upload error:', error);
@@ -57,8 +60,9 @@ router.post('/multiple', upload.array('files', 20), (req, res) => {
       return res.status(400).json({ error: 'No files uploaded' });
     }
     
+    const baseUrl = (process.env.BASE_URL || '').replace(/\/$/, '');
     const urls = (req.files as Express.Multer.File[]).map(
-      (file) => `/api/media/${file.filename}`
+      (file) => `${baseUrl}/api/media/${file.filename}`
     );
     
     return res.status(200).json({ urls });
