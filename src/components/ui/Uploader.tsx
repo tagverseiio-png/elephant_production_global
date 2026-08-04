@@ -32,11 +32,9 @@ export function Uploader({ label, value, onChange, accept, type, required }: Upl
     const formData = new FormData();
     formData.append('file', file);
 
-    const uploadBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
-
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', `${uploadBase}/upload`, true);
+      xhr.open('POST', '/api/upload', true);
       
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) {
