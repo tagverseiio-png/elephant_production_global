@@ -37,7 +37,7 @@ interface FilmData {
 }
 
 const emptyData: FilmData = {
-  id: '', title: '', category: 'Documentary', year: '', director: '',
+  id: '', title: '', category: 'Documentary', year: new Date().getFullYear().toString(), director: '',
   stillImage: '', hero_image: '', director_image: '', trailerVideo: '',
   awardYear: '', awardLaurel: '', awardLogo: '',
   reviews: [], awards: [], credits: [],
@@ -55,6 +55,7 @@ export default function FilmForm() {
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [idModified, setIdModified] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -110,8 +111,27 @@ export default function FilmForm() {
         {error && <p className="text-red-400 text-xs tracking-wider uppercase">{error}</p>}
 
         <Section label="Basic Info">
-          <Field label="ID (slug)" value={form.id} onChange={v => update('id', v)} disabled={isEdit} />
-          <Field label="Title" value={form.title} onChange={v => update('title', v)} required />
+          <Field 
+            label="ID (slug)" 
+            value={form.id} 
+            onChange={v => {
+              update('id', v);
+              setIdModified(true);
+            }} 
+            disabled={isEdit} 
+          />
+          <Field 
+            label="Title" 
+            value={form.title} 
+            onChange={v => {
+              update('title', v);
+              if (!isEdit && !idModified) {
+                const slug = v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                update('id', slug);
+              }
+            }} 
+            required 
+          />
           <div className="grid grid-cols-2 gap-4">
             <SelectField label="Category" value={form.category} onChange={v => update('category', v)} options={CATEGORIES} />
             <Field label="Year" value={form.year} onChange={v => update('year', v)} required />
