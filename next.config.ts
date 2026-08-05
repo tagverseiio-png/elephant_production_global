@@ -23,8 +23,14 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
-    // Get the base backend URL (removing the /api suffix if present)
-    const backendApiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+    // Determine the backend URL. Vercel build might not have NEXT_PUBLIC_API_URL 
+    // populated depending on the environment variable settings, so we fallback 
+    // to the production URL instead of localhost to prevent Vercel proxy 404s.
+    const defaultBackend = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:4000/api'
+      : 'https://elephantproductionapi.t4gverse.com/api';
+      
+    const backendApiUrl = process.env.NEXT_PUBLIC_API_URL || defaultBackend;
     const backendHost = backendApiUrl.replace(/\/api\/?$/, '');
     
     return [
@@ -32,6 +38,15 @@ const nextConfig: NextConfig = {
         // Proxy all media requests to the backend
         source: '/api/media/:path*',
         destination: `${backendHost}/api/media/:path*`,
+      },
+      {
+        // Proxy upload requests directly to bypass Next.js API route body limits
+        source: '/api/upload',
+        destination: `${backendHost}/api/upload`,
+      },
+      {
+        source: '/api/upload/multiple',
+        destination: `${backendHost}/api/upload/multiple`,
       },
     ];
   },
