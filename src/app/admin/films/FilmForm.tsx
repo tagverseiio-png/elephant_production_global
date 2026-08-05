@@ -116,7 +116,7 @@ export default function FilmForm() {
             value={form.id} 
             onChange={v => {
               update('id', v);
-              setIdModified(v.length > 0);
+              setIdModified(true);
             }} 
             disabled={isEdit} 
           />
@@ -130,12 +130,6 @@ export default function FilmForm() {
                 update('id', slug);
               }
             }} 
-            required 
-          />
-          <Field 
-            label="Director" 
-            value={form.director} 
-            onChange={v => update('director', v)} 
             required 
           />
           <div className="grid grid-cols-2 gap-4">
@@ -181,13 +175,6 @@ export default function FilmForm() {
             label="Hero Image" 
             value={form.hero_image} 
             onChange={v => update('hero_image', v)} 
-            type="image" 
-            accept=".jpg,.jpeg,.png,.webp" 
-          />
-          <Uploader 
-            label="Director Image" 
-            value={form.director_image} 
-            onChange={v => update('director_image', v)} 
             type="image" 
             accept=".jpg,.jpeg,.png,.webp" 
           />

@@ -21,11 +21,9 @@ export interface IFilm extends Document {
   title: string;
   category: string;
   year: string;
-  director: string;
   stillImage: string;
   trailerVideo?: string;
   hero_image?: string;
-  director_image?: string;
   gallery_images?: string[];
   awardYear?: string;
   awardLaurel?: string;
@@ -74,11 +72,9 @@ const filmSchema = new Schema<IFilm>(
     title: { type: String, required: true },
     category: { type: String, required: true },
     year: { type: String, required: true },
-    director: { type: String, required: true },
     stillImage: { type: String, required: true },
     trailerVideo: { type: String },
     hero_image: { type: String },
-    director_image: { type: String },
     gallery_images: [{ type: String }],
     awardYear: { type: String },
     awardLaurel: { type: String },
