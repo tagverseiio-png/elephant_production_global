@@ -92,16 +92,17 @@ export default function ContactPage() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6 }}
-      className="w-full min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden"
+      className="w-full max-w-[100vw] min-h-screen bg-[#0a0a0a] text-white relative overflow-x-clip isolate [color-scheme:dark]"
     >
-      {/* Ambient background glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-white/[0.03] blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-white/[0.02] blur-[100px]" />
+      {/* Ambient background glow — hidden on small screens to avoid iOS Safari
+          compositing bugs (large blur layers painting white blocks) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none hidden md:block" aria-hidden="true">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-white/[0.03] blur-[120px] transform-gpu" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-white/[0.02] blur-[100px] transform-gpu" />
       </div>
 
       {/* Top section: editorial intro */}
-      <div className="relative z-10 pt-32 md:pt-40 px-6 md:px-12 pb-16 md:pb-24">
+      <div className="relative z-10 w-full max-w-full min-w-0 pt-32 md:pt-40 px-6 md:px-12 pb-16 md:pb-24 bg-[#0a0a0a]">
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 border-b border-white/10 pb-16">
           <div className="flex flex-col gap-8">
             <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] font-medium text-[#666]">
@@ -121,13 +122,13 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-6 md:items-end md:text-right mt-8 md:mt-0">
+          <div className="flex flex-col gap-6 md:items-end md:text-right mt-8 md:mt-0 w-full md:w-auto min-w-0 max-w-full">
             <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#555]">
               Direct Inquiry
             </div>
             <a
               href="mailto:hello@elephantproduction.com"
-              className="text-lg md:text-xl lg:text-2xl font-medium tracking-tight text-white border-b border-[#333] pb-2 hover:border-white/60 hover:text-white/80 transition-all duration-300"
+              className="text-base sm:text-lg md:text-xl lg:text-2xl font-medium tracking-tight text-white border-b border-[#333] pb-2 hover:border-white/60 hover:text-white/80 transition-all duration-300 break-all max-w-full"
             >
               hello@elephantproduction.com
             </a>
@@ -158,10 +159,10 @@ export default function ContactPage() {
       </div>
 
       {/* Main content: form + sidebar */}
-      <div className="relative z-10 px-6 md:px-12 pb-24 md:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div className="relative z-10 w-full max-w-full min-w-0 px-6 md:px-12 pb-24 md:pb-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 bg-[#0a0a0a]">
         {/* Form column */}
-        <div className="col-span-1 lg:col-span-8">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-0">
+        <div className="col-span-1 lg:col-span-8 min-w-0 max-w-full w-full">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-0 w-full max-w-full min-w-0">
             {/* Project type selector */}
             <div className="flex flex-col gap-4 mb-12">
               <label className="text-[9px] uppercase tracking-widest font-bold text-[#666]">
@@ -186,39 +187,42 @@ export default function ContactPage() {
             </div>
 
             {/* Form fields grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 w-full max-w-full min-w-0">
               {/* Name */}
-              <div className="flex flex-col gap-2 mb-8 group">
+              <div className="flex flex-col gap-2 mb-8 group min-w-0 max-w-full">
                 <label className="text-[9px] uppercase tracking-widest font-bold text-[#666] group-focus-within:text-white transition-colors">
                   Your Name
                 </label>
                 <input
                   type="text"
                   required
+                  autoComplete="name"
                   value={formState.name}
                   onChange={(e) => handleChange('name', e.target.value)}
-                  className="w-full bg-transparent border-b border-[#333] py-3 text-lg md:text-xl focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333]"
+                  className="block w-full max-w-full min-w-0 appearance-none rounded-none bg-transparent border-b border-[#333] py-3 text-base sm:text-lg md:text-xl text-white focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333] [color-scheme:dark]"
                   placeholder="Jane Doe"
                 />
               </div>
 
               {/* Email */}
-              <div className="flex flex-col gap-2 mb-8 group">
+              <div className="flex flex-col gap-2 mb-8 group min-w-0 max-w-full">
                 <label className="text-[9px] uppercase tracking-widest font-bold text-[#666] group-focus-within:text-white transition-colors">
                   Email Address
                 </label>
                 <input
                   type="email"
                   required
+                  autoComplete="email"
+                  inputMode="email"
                   value={formState.email}
                   onChange={(e) => handleChange('email', e.target.value)}
-                  className="w-full bg-transparent border-b border-[#333] py-3 text-lg md:text-xl focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333]"
+                  className="block w-full max-w-full min-w-0 appearance-none rounded-none bg-transparent border-b border-[#333] py-3 text-base sm:text-lg md:text-xl text-white focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333] [color-scheme:dark]"
                   placeholder="jane@example.com"
                 />
               </div>
 
               {/* Date */}
-              <div className="flex flex-col gap-2 mb-8 group">
+              <div className="flex flex-col gap-2 mb-8 group min-w-0 max-w-full">
                 <label className="text-[9px] uppercase tracking-widest font-bold text-[#666] group-focus-within:text-white transition-colors">
                   Event Date
                 </label>
@@ -226,27 +230,28 @@ export default function ContactPage() {
                   type="date"
                   value={formState.date}
                   onChange={(e) => handleChange('date', e.target.value)}
-                  className="w-full bg-transparent border-b border-[#333] py-3 text-lg md:text-xl focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333] [color-scheme:dark]"
+                  className="block w-full max-w-full min-w-0 appearance-none rounded-none bg-transparent border-b border-[#333] py-3 min-h-[54px] text-base sm:text-lg md:text-xl text-white focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333] [color-scheme:dark]"
                 />
               </div>
 
               {/* Location */}
-              <div className="flex flex-col gap-2 mb-8 group">
+              <div className="flex flex-col gap-2 mb-8 group min-w-0 max-w-full">
                 <label className="text-[9px] uppercase tracking-widest font-bold text-[#666] group-focus-within:text-white transition-colors">
                   Event Location
                 </label>
                 <input
                   type="text"
+                  autoComplete="off"
                   value={formState.location}
                   onChange={(e) => handleChange('location', e.target.value)}
-                  className="w-full bg-transparent border-b border-[#333] py-3 text-lg md:text-xl focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333]"
+                  className="block w-full max-w-full min-w-0 appearance-none rounded-none bg-transparent border-b border-[#333] py-3 text-base sm:text-lg md:text-xl text-white focus:outline-none focus:border-white transition-colors duration-300 placeholder-[#333] [color-scheme:dark]"
                   placeholder={regionMeta.homeBase}
                 />
               </div>
             </div>
 
             {/* Message */}
-            <div className="flex flex-col gap-2 mb-12 group">
+            <div className="flex flex-col gap-2 mb-12 group min-w-0 max-w-full w-full">
               <label className="text-[9px] uppercase tracking-widest font-bold text-[#666] group-focus-within:text-white transition-colors">
                 Tell Us About Your Vision
               </label>
@@ -255,16 +260,16 @@ export default function ContactPage() {
                 required
                 value={formState.message}
                 onChange={(e) => handleChange('message', e.target.value)}
-                className="w-full bg-transparent border-b border-[#333] py-3 text-lg md:text-xl focus:outline-none focus:border-white transition-colors duration-300 resize-none placeholder-[#333]"
+                className="block w-full max-w-full min-w-0 appearance-none rounded-none bg-transparent border-b border-[#333] py-3 text-base sm:text-lg md:text-xl text-white focus:outline-none focus:border-white transition-colors duration-300 resize-none placeholder-[#333] [color-scheme:dark]"
                 placeholder="Share the details, the mood, the moments you want to remember forever..."
               />
             </div>
 
             {/* Submit */}
-            <div className="flex items-center gap-8">
+            <div className="flex flex-col sm:flex-row sm:items-center items-start gap-6 sm:gap-8 w-full max-w-full min-w-0">
               <button
                 type="submit"
-                className="group relative overflow-hidden bg-white text-[#111] px-10 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-500 hover:px-12"
+                className="group relative overflow-hidden bg-white text-[#111] px-10 py-4 text-[11px] font-bold tracking-widest uppercase transition-all duration-500 hover:px-12 max-w-full shrink-0"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Send Inquiry
@@ -307,7 +312,7 @@ export default function ContactPage() {
         </div>
 
         {/* Sidebar: studio locations + booking info */}
-        <div className="col-span-1 lg:col-span-4 flex flex-col gap-12 lg:pl-8 lg:border-l border-white/10">
+        <div className="col-span-1 lg:col-span-4 min-w-0 max-w-full w-full flex flex-col gap-12 lg:pl-8 lg:border-l border-white/10 bg-[#0a0a0a]">
           {/* Booking intro */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.3em] font-bold text-[#555]">

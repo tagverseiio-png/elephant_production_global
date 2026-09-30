@@ -76,8 +76,8 @@ export default function HeroSection() {
     <section className="relative w-full h-screen bg-white overflow-hidden flex items-center justify-center select-none">
 
 
-      {/* Top Right Text */}
-      <div className="absolute top-12 md:top-24 right-6 md:right-12 flex flex-col items-end gap-1 text-[8px] md:text-[10px] uppercase tracking-[0.3em] z-20 text-[#666]">
+      {/* Top Right Text — clears the fixed nav on mobile */}
+      <div className="absolute top-24 right-6 md:right-12 flex flex-col items-end gap-1 text-[8px] md:text-[10px] uppercase tracking-[0.3em] z-20 text-[#666]">
         <span>Since</span>
         <span>2022</span>
         <div className="w-8 h-[1px] bg-[#111] mt-2" />

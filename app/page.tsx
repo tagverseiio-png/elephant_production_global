@@ -255,10 +255,10 @@ export default function Home() {
 
   return (
     <RegionContext.Provider value={{ region, setRegion }}>
-    <div className="font-sans antialiased text-[#111111] bg-white selection:bg-[#111] selection:text-white overflow-x-hidden w-full relative min-h-screen flex flex-col justify-between">
+    <div className={`font-sans antialiased text-[#111111] selection:bg-[#111] selection:text-white overflow-x-clip w-full max-w-[100vw] relative min-h-screen flex flex-col justify-between ${currentPage === 'contact' ? 'bg-[#0a0a0a] text-white' : 'bg-white'}`}>
       <Navigation currentPage={currentPage} onNavigate={handlePageChange} />
 
-      <main className="w-full flex-grow">
+      <main className={`w-full max-w-[100vw] min-w-0 flex-grow ${currentPage === 'contact' ? 'bg-[#0a0a0a]' : 'bg-white'}`}>
         <AnimatePresence mode="wait">
           {currentPage === 'home' && (
             <HomePage key="home" onServiceSelect={handleServiceSelect} />
